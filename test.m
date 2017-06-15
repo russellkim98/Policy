@@ -1,1 +1,11 @@
 data = importdata('SimulatorOutput.csv');
+colHOW = 1;
+colAuct = 2;
+colClick = 3;
+colCost = 4;
+colConv = 5;
+pWC = data(:,colClick)./data(:,colAuct);
+fCPC = data(:,colCost)./data(:,colClick);
+fVPC = data(:,colConv)./data(:,colClick);
+avgFVPC = nansum(fVPC)/sum(~isnan(fVPC),1);
+disp(avgFVPC);

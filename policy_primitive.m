@@ -1,16 +1,25 @@
 % Uses the first policy to come up with an optimal bid value using
 % simulated data.
 
-% Read in one day's worth of simulated data.
+% Read in one month's worth of simulated data. Specifically, this data is
+% from 6/15/15 (Monday). 
 data = importdata('SimulatorOutput.csv');
 
-% Estimate the value per click, the difference between the bid and the cost
-% per click, and the click probability function.  
-colFVPC = 22;
-colFCPC = 20;
-colPWC = 17;
-fVPC = nansum(data(:,colFVPC))/sum(~isnan(data(:,colFVPC)),1);
-d = 7 - nansum(data(:,colFCPC))/sum(~isnan(data(:,colFCPC)),1);
+% Calculate the click probability, the cost per click, and the value per
+% click for each hour. 
+colHOW = 1;
+colAuct = 2;
+colClick = 3;
+colCost = 4;
+colConv = 5;
+pWC = data(:,colClick)./data(:,colAuct);
+fCPC = data(:,colCost)./data(:,colClick);
+fVPC = data(:,colConv)./data(:,colClick);
+
+% Estimate the value per click, the difference between the bid and the
+% cost per click, and the click probability function.  
+avgFVPC = nansum(fVPC)/sum(~isnan(fVPC),1);
+d = 7 - nansum(fCPC)/sum(~isnan(fCPC),1);
 
 y = data(~isnan(data(:,colPWC)),colPWC);
 % Y = log(1./y - ones(length(y),1)); would have used for linear regression
