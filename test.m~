@@ -1,0 +1,6 @@
+data = importdata('SimulatorOutput.csv');
+colPWC = 17;
+y = data(~isnan(data(:,colPWC)),colPWC);
+Y = log(1./y - ones(size(y,1),size(y,2)));
+disp(ones(size(y,1),1));
+disp(Y);
