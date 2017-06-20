@@ -26,7 +26,7 @@ fVPC = data(:,colConv)./data(:,colClick);
 
 % Find theta values for each hour of the week indicator variable. 
 theta = zeros(numHOW, 1);
-for k = 1:168
+for k = 1:numHOW
     pWCk = pWC(data(:,colHOW) == k);
     avgPWCk = nansum(pWCk)/sum(~isnan(pWCk));
     if avgPWCk == 0
@@ -54,12 +54,13 @@ for k = 1:168
     der = @(b) exp(theta(k)-b)*(avgfVPCk+avgDk-b)/(1+exp(theta(k)-b))^2 - ...
         1/(1+exp(theta(k)-b));
     b(k) = fzero(der,0);
-    bid(k) = min([b(k) q*avgfVPCk+avgDk]);    
+    bid(k) = min([b(k) q*avgfVPCk+avgDk]); 
+ 
 end
 
 % Plot the optimum bid values for each hour of the week.
 plot(1:168, bid);
-axis([0 168 0 15]);
+axis([0 168 0 20]);
 
 % Would have used for linear regression
 %y = pWC(~isnan(pWC));
