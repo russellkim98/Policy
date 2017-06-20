@@ -1,3 +1,6 @@
+% Combining 1-Hot with logKG in this way DOES NOT WORK. This code was just
+% used to test something out.
+
 % Uses a knowledge gradient policy with a logistic regression belief model
 % to come up with an hour of the week to test using simulated data. 
 % Calls MATLAB functions developed by Yingfei Wang from her logistic KG work.
@@ -15,8 +18,7 @@ colClick = 3;
 % allows us to use Yingfei's algorithm and code.
 click = logical(data(:,colClick));
 
-% 
-X=(1:168)';
+X=diag(ones(numHOW,1));
 
 theta_est = zeros(numHOW, 1);
 for k = 1:numHOW
@@ -31,4 +33,3 @@ cd logisticKG_yingfei;
 [indexX,KG]=logKG(X,theta_est,q_est);
 
 cd ..;
-
