@@ -4,7 +4,9 @@
 
 * Files for running various policies to decide bid values for auctions on Google Ads
 
-### Description of Files ###
+### Description of (Current Version of) Files ###
+
+* policy_logKG.m -- MATLAB script. Uses data from SimulatorOutput.csv. Calls Yingfei's logKG script to use a knowledge gradient policy combined with a logistic regression belief model. WIP.
 
 * policy_primitive.m -- MATLAB script. Uses data from SimulatorOutput.csv to come up with optimal bid values for each hour of the week. Uses some of the logic of the original "Vanilla Model" policy.
 
