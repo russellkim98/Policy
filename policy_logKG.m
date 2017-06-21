@@ -1,3 +1,5 @@
+% Another attempt at using logKG. DOES NOT WORK. Ignore. 
+
 % Uses a knowledge gradient policy with a logistic regression belief model
 % to come up with an hour of the week to test using simulated data. 
 % Calls MATLAB functions developed by Yingfei Wang from her logistic KG work.

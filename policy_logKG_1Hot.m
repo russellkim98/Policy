@@ -7,7 +7,7 @@
 
 % Read in simulated data. Right now, this is just a modified copy of
 % ParsedParam only with hour_of_week, auctions, clicks, cost, and value per
-% conversion.
+% conversion.KG
 data = importdata('SimulatorOutput.csv');
 numHOW = 168;
 

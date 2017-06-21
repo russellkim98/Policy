@@ -1,5 +1,6 @@
 % Simply a testing file. IGNORE
 
+N=10;
 d=10;
 n=200;
 X=[ones(n,1),rand(n,d)*6-3];
@@ -15,6 +16,13 @@ q_est=q;
 [maxKG, hello]=max(KG);
 iidex=find(KG==maxKG);
 maxX=iidex(randi(length(iidex)));
-disp(iidex);
-disp(hello);
-disp(maxX);
+%disp(iidex);
+%disp(hello);
+%disp(maxX);
+
+wStar=normrnd(0,sqrt(lambda),[d,1]);
+
+samples=zeros(N,M);
+for iii=1:M
+    samples(:,iii)=lable_d(wStar,X(iii,:)',N);
+end
