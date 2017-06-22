@@ -13,10 +13,10 @@ colHOW = 1;
 colAuct = 2;
 colClick = 3;
 colCost = 4;
-colConv = 5;
+colTCV = 5;
 pWC = data(:,colClick)./data(:,colAuct);
 fCPC = data(:,colCost)./data(:,colClick);
-fVPC = data(:,colConv)./data(:,colClick);
+fVPC = data(:,colTCV)./data(:,colClick);
 
 % Estimate the value per click and the difference between the bid and the
 % cost per click. It's better to use the average for each HoW, as done

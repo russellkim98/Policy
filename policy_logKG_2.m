@@ -2,11 +2,22 @@
 % to come up with a bid to test using simulated data. 
 % Calls MATLAB functions developed by Yingfei Wang. 
 
+clf;
+
 cd logisticKG_yingfei;
 
-N = 1000; % time budget (# of simulations)
-d = 2;    % # of dimensions
-M = 25;   % # of alternatives
+global year month day day_of_week hour;
+
+N = 100; % time budget (# of simulations/hours)
+d = 2;   % # of dimensions
+M = 25;  % # of alternatives
+
+% starting time of the simulation
+year = 16;
+month = 1;
+day = 1;
+day_of_week = 4;
+hour = 0;
 
 % alternatives that we are deciding between
 disc = [0:0.25:2,2.5:0.5:10]';
@@ -27,20 +38,39 @@ end
 w=zeros(d,1);
 lambda=1;
 q=ones(d,1)/lambda;
-
-count=zeros(M,1);
 w_est=w;
 q_est=q;
 
-for i=1:N
-    [indexX,KG]=logKG(X,w_est,q_est);
+% keep track of number of times KG chooses each alternative
+count=zeros(M,1);
+for n=1:N
+    [indexX,KG]=logKG(X,w_est,q_est); %#ok<ASGLU>
+    
+    % online extension
+    prob = sigmoid(X*w_est);
+    OLKG = prob + (N-n)*KG;
+    [~,indexX] = max(OLKG); % changes indexX based on online extension
+    
     x=X(indexX,:)';
+    
+    % get response for chosen alternative
     count(indexX)=count(indexX)+1;
     y=samples(count(indexX),indexX);
+    
+    % update estimates of w and q
     w_est=maxW(x,q_est,w_est,y);
     p=sigmoid(sum(w_est.*x));
     q_est=q_est+p.*(1-p).*diag(x*x');
+    
 end
 
-disp(w_est);
+% graph to see error
+est=sigmoid(X*w_est);
+plot(1:M,truth,1:M,est);
+axis([-1 M+1 0 1]);
+
+% graph to see how many times each alternative is chosen during run
+%figure();
+%plot(1:25,count,'o');
+
 cd ..;
