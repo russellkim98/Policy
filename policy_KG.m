@@ -1,15 +1,6 @@
 % Uses a knowledge gradient policy with a logistic regression belief model
 % to come up with bids to test in a Google Ads auction and make a profit.
 
-global year month day day_of_week hour;
-
-% starting time of the simulation
-year = 16;
-month = 1;
-day = 1;
-day_of_week = 4;
-hour = 0;
-
 N = 100; % time budget (# of hours)
 d = 2;   % # of dimensions
 M = 25;  % # of alternatives
@@ -31,13 +22,22 @@ p = p_0;
 for n=1:N
     
     % chose an alternative (a bid) based on KG policy
-    %vKG = KG(X,theta,p);
+    vKG = KG(X,theta,p);
     
-    % online application ?
+    % online application -- maybe just include this in KG
+    for alt=1:M
+        x=X(alt,:);
+        fBar(alt) = sum(p.*profit(x,theta));
+    end
+    vOLKG = fBar +(N-n).*vKG;
     
     % get a simulated response for chosen alternative
     
+    
     % update probabilities for possible coefficient vectors
+    
+    
+    % update time variables
     
 end
 

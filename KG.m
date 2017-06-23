@@ -3,7 +3,7 @@
 % true representations of the coefficients of x. Returns a knowledge
 % gradient value for each action. 
 
-function vKG = KG(X,theta,prob)
+function vKG = KG(X,theta,p)
 [M,d]=size(X);
 [~,K]=size(theta);
 vKG=zeros(M,1);
@@ -12,7 +12,7 @@ vKG=zeros(M,1);
 fBar = zeros(M,1);
 for alt=1:M
     x=X(alt,:);
-    fBar(alt) = sum(prob.*profit(x,theta));
+    fBar(alt) = sum(p.*profit(x,theta));
 end
 best = max(fBar);
 
@@ -22,7 +22,7 @@ for alt=1:M
     % another loop
   
     
-    vKG = sum(.*prob) - best;
+    vKG = sum(.*p) - best;
 end
 
 
