@@ -1,0 +1,33 @@
+% Uses a knowledge gradient policy with a logistic regression belief model
+% to come up with bids to test in a Google Ads auction and make a profit.
+
+global year month day day_of_week hour;
+
+% starting time of the simulation
+year = 16;
+month = 1;
+day = 1;
+day_of_week = 4;
+hour = 0;
+
+N = 100; % time budget (# of simulations/hours)
+d = 2;   % # of dimensions
+M = 25;  % # of alternatives
+K = 25;  % # of possible coefficient vectors 
+
+% alternatives that we are deciding between (discretized bids) 
+disc = [0:0.25:2,2.5:0.5:10]';
+X = [ones(M,1) disc];
+
+% thetas we are deciding between (discretized coefficients)
+one_disc = [-5:-2.5:-15];
+ones(1,
+
+% prior distribution of p
+p_0 = ones(1,K)./K;
+p = p_0;
+
+for n=1:N
+    %vKG = KG(X,theta,p);
+    
+end

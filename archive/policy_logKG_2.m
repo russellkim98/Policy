@@ -1,23 +1,15 @@
 % Uses a knowledge gradient policy with a logistic regression belief model
-% to come up with a bid to test using simulated data. 
+% to come up with a bid to test using simulated data. Works on the
+% synthetic data set generated in the code. 
 % Calls MATLAB functions developed by Yingfei Wang. 
 
 clf;
 
 cd logisticKG_yingfei;
 
-global year month day day_of_week hour;
-
 N = 100; % time budget (# of simulations/hours)
 d = 2;   % # of dimensions
 M = 25;  % # of alternatives
-
-% starting time of the simulation
-year = 16;
-month = 1;
-day = 1;
-day_of_week = 4;
-hour = 0;
 
 % alternatives that we are deciding between
 disc = [0:0.25:2,2.5:0.5:10]';
@@ -43,6 +35,7 @@ q_est=q;
 
 % keep track of number of times KG chooses each alternative
 count=zeros(M,1);
+
 for n=1:N
     [indexX,KG]=logKG(X,w_est,q_est); %#ok<ASGLU>
     
