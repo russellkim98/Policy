@@ -1,14 +1,22 @@
-% Takes in a matrix X of alternative actions, a matrix theta of possible
-% coeffient vectors, and a matrix p of probabilities that each theta vector
-% is a true representation of the coefficients of x. Returns a knowledge
-% gradient value for each action, and the given theta and p matrices.
+% TESTING SCRIPT !! 
 
-function [vKG,theta,p] = KG(X,theta,p)
+M = 25;  % # of alternatives
+K = 25;  % # of possible coefficient vectors 
 
-[M,~] = size(X);     % # of alternatives and dimensions
-[~,K] = size(theta); % # of possible coefficient vectors
+% alternatives that we are deciding between (discretized bids) 
+disc = [0:0.25:2,2.5:0.5:10]';
+X = [ones(M,1) disc];
+
+% thetas we are deciding between (discretized coefficients)
+zero_disc = repmat([-5:-2.5:-15], 1, 5);
+one_disc = [ones(1,5) ones(1,5)*2 ones(1,5)*3 ones(1,5)*4 ones(1,5)*5];
+theta = [zero_disc ; one_disc];
+
+% prior distribution of p
+p_0 = ones(1,K)./K;
+p = p_0;
+
 vKG = zeros(M,1);
-
 
 % Calculate distribution of number of auctions, given the avg # of auctions
 % mu in a given time step.
@@ -23,31 +31,11 @@ probAuct = [probTemp 1-sum(probTemp)];
 fBar = zeros(M,1);
 for alt_prime=1:M
     x_prime=X(alt_prime,:);
-    fBar(alt_prime) = sum(p.*profit(x_prime));
+    for a=1:A
+        fBar(alt_prime) = fBar(alt_prime) + probAuct(a)*a*sum(p.*profit(x_prime).*phi(x_prime*theta));
+    end
 end
 best = max(fBar);
-
-% Calculate best value without thinking about value of information
-% val_auct = zeros(1,A+1);
-% for a=1:A
-%     fBar = zeros(M,1);
-%     for alt_prime=1:M
-%         x_prime=X(alt_prime,:);
-%         fBar(alt_prime) = sum(p.*profit(x_prime));
-%     end
-%     val_auct(a+1) = a*max(fBar);
-% end
-% best = sum(val_auct.*probAuct);
-
-% Calculate best value without thinking about value of information
-% fBar = zeros(M,1);
-% for alt_prime=1:M
-%     x_prime=X(alt_prime,:);
-%     for a=1:A
-%         fBar(alt_prime) = fBar(alt_prime) + probAuct(a)*a*sum(p.*profit(x_prime).*phi(x_prime*theta));
-%     end
-% end
-% best = max(fBar);
 
 % Calculate knowledge gradient for each alternative x
 for alt=1:M
@@ -71,5 +59,4 @@ for alt=1:M
     end
     vKG(alt) = sum(val_theta.*p) - best;  
 end
-
 
