@@ -38,10 +38,10 @@ for alt=1:M
 end
 
 % Convert offline KG values to online ones.
-%vOLKG = zeros(size(vKG));
-%for alt=1:M
-%    vOLKG(alt) = vKG(alt) + rewards(alt);
-%end
+vOLKG = zeros(size(vKG));
+for alt=1:M
+    vOLKG(alt) = vKG(alt) + rewards(alt);
+end
 
 % Choose bid that maximizes KG.
 [~,indexMax] = max(vKG);
