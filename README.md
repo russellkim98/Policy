@@ -6,7 +6,22 @@
 
 ### Description of (Current Version of) Files ###
 
-* policy_logKG.m -- MATLAB script. Uses data from SimulatorOutput.csv. Calls Yingfei's logKG script to use a knowledge gradient policy combined with a logistic regression belief model. WIP.
+* initialize_KG.m -- MATLAB function. Initializes knowledge gradient policy. Meant to be called once at the start of a run of simulations. Returns 3 matrices that should be stored and passed on in the first call to KG. 
+
+* KG.m -- MATLAB function. Chooses a bid using the knowledge gradient policy. Takes in 3 matrices and returns 3 matrices and a bid value, all to be stored and passed on in the next call to learner_KG. 
+
+* learner_KG.m -- MATLAB function. Updates the knowledge gradient policy to reflect most recent bid and response. Takes in 3 matrices, a bid and its response. Returns 3 matrices to be stored and passed on in the next call to KG. 
+
+Helper functions:
+
+* phi.m -- MATLAB function. Logistic function. 
+
+* profit.m -- MATLAB function. Estimates profit after a clickthrough given a bid value.
+
+* update_p.m -- MATLAB function. Updates probability vector of the knowledge gradient policy given a bid and a response.
+
+Archive:
+* policy_logKG_2.m, policy_logKG_1Hot.m, policy_logKG.m -- MATLAB scripts. Tried to calls Yingfei's logKG function to use a knowledge gradient policy combined with a logistic regression belief model. 
 
 * policy_primitive.m -- MATLAB script. Uses data from SimulatorOutput.csv to come up with optimal bid values for each hour of the week. Uses some of the logic of the original "Vanilla Model" policy.
 
