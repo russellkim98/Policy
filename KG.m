@@ -1,10 +1,9 @@
 % Takes in a matrix X of alternative actions, a matrix theta of possible
 % coeffient vectors, and a matrix p of probabilities that each theta vector
-% is the true representation. Returns the alternative action xChoice that
-% maximizes the knowledge gradient, and the given X, theta, and p matrices.
-% NOTE: The chosen bid value xChoice(2).
+% is the true representation. Returns the bid that maximizes the knowledge 
+% gradient, and the given X, theta, and p matrices.
 
-function [X,theta,p,xChoice] = KG(X,theta,p)
+function [X,theta,p,bid] = KG(X,theta,p)
 
 [M,~] = size(X);     % # of alternatives and dimensions
 [~,K] = size(theta); % # of possible coefficient vectors
@@ -19,7 +18,7 @@ pTemp = poisspdf(0:A-1,mu);
 pAuct = [pTemp 1-sum(pTemp)];
 
 % Calculate best value without thinking about value of information
-x_best = inner_max(X,theta,p,pAuct);
+[rewards,x_best] = inner_max(X,theta,p,pAuct);
 
 % Calculate offline knowledge gradient for each alternative x
 vKG = zeros(M,1);
@@ -31,24 +30,31 @@ for alt=1:M
         val_resp = zeros(1,2);
         for y=0:1
             p_next = update_p(x,y,theta,p);
-            val_resp(y+1) = inner_max(X,theta,p_next,pAuct);
+            [~,val_resp(y+1)] = inner_max(X,theta,p_next,pAuct);
         end
         val_theta(j) = val_resp(1)*(1-phi(x*t))+val_resp(2)*phi(x*t);
     end
     vKG(alt) = sum(val_theta.*p) - x_best;
 end
 
-disp(vKG);
-
 % Convert offline KG values to online ones.
+%vOLKG = zeros(size(vKG));
+%for alt=1:M
+%    vOLKG(alt) = vKG(alt) + rewards(alt);
+%end
 
-% Choose alternative action that maximizes KG.
+% Choose bid that maximizes KG.
 [~,indexMax] = max(vKG);
-xChoice = X(indexMax,:);
+bid = X(indexMax,2);
 
 end
 
-function best = inner_max(X,theta,prob,pAuct)
+% Local function that takes in a matrix a matrix X of alternative actions, 
+% a matrix theta of possible coeffient vectors, a matrix p of probabilities
+% that each theta vector is the true representation, and a matrix pAuct
+% of probabilities that a given number of auctions take place. Returns the
+% expected reward for each alternative and the best of those values. 
+function [val_x,best] = inner_max(X,theta,prob,pAuct)
 
 [M,~] = size(X);
 [~,K] = size(theta);

@@ -4,7 +4,7 @@
 % probabilities that each theta vector is a true representation of the
 % coefficients of x. 
 
-function [X,theta,p] = initialize_KG( input_args )
+function [X,theta,p] = initialize_KG()
 
 d = 2;   % # of dimensions
 M = 25;  % # of alternatives
