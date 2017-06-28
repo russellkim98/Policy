@@ -4,7 +4,7 @@
 function y=profit(x)
 % fVPC and d are dummy values currently
 fVPC = 38; 
-d = 3;
+d = 4;
 y = fVPC + d - x(2);
 end
 

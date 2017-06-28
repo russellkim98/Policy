@@ -1,14 +1,13 @@
 % Takes in a matrix X of alternative actions, a matrix theta of possible
 % coeffient vectors, and a matrix p of probabilities that each theta vector
-% is a true representation of the coefficients of x. Returns a knowledge
-% gradient value for each action, and the given theta and p matrices.
+% is the true representation. Returns the alternative action xChoice that
+% maximizes the knowledge gradient, and the given X, theta, and p matrices.
+% NOTE: The chosen bid value xChoice(2).
 
-function [vKG,theta,p] = KG(X,theta,p)
+function [X,theta,p,xChoice] = KG(X,theta,p)
 
 [M,~] = size(X);     % # of alternatives and dimensions
 [~,K] = size(theta); % # of possible coefficient vectors
-vKG = zeros(M,1);
-
 
 % Calculate distribution of number of auctions, given the avg # of auctions
 % mu in a given time step.
@@ -16,60 +15,64 @@ vKG = zeros(M,1);
 % might want to vary mu later.
 mu = 1;
 A = mu + 3*sqrt(mu);
-probTemp = poisspdf([0:A-1],mu);
-probAuct = [probTemp 1-sum(probTemp)];
+pTemp = poisspdf(0:A-1,mu);
+pAuct = [pTemp 1-sum(pTemp)];
 
 % Calculate best value without thinking about value of information
-fBar = zeros(M,1);
-for alt_prime=1:M
-    x_prime=X(alt_prime,:);
-    fBar(alt_prime) = sum(p.*profit(x_prime));
-end
-best = max(fBar);
+x_best = inner_max(X,theta,p,pAuct);
 
-% Calculate best value without thinking about value of information
-% val_auct = zeros(1,A+1);
-% for a=1:A
-%     fBar = zeros(M,1);
-%     for alt_prime=1:M
-%         x_prime=X(alt_prime,:);
-%         fBar(alt_prime) = sum(p.*profit(x_prime));
-%     end
-%     val_auct(a+1) = a*max(fBar);
-% end
-% best = sum(val_auct.*probAuct);
-
-% Calculate best value without thinking about value of information
-% fBar = zeros(M,1);
-% for alt_prime=1:M
-%     x_prime=X(alt_prime,:);
-%     for a=1:A
-%         fBar(alt_prime) = fBar(alt_prime) + probAuct(a)*a*sum(p.*profit(x_prime).*phi(x_prime*theta));
-%     end
-% end
-% best = max(fBar);
-
-% Calculate knowledge gradient for each alternative x
+% Calculate offline knowledge gradient for each alternative x
+vKG = zeros(M,1);
 for alt=1:M
-    x=X(alt,:);
+    x = X(alt,:);
     val_theta = zeros(1,K);
     for j=1:K
-        t=theta(:,j);
-        val_auct = zeros(1,A+1);
-        % For a = 0, val_auct is already (correctly) 0 
-        for a=1:A
-            % Only consider the case when y=1 because when y=0, profit=0
-            p_next = update_p(x,1,theta,p);
-            fBar_next = zeros(M,1);
-            for alt_prime=1:M
-                x_prime=X(alt_prime,:);
-                fBar_next(alt_prime) = sum(p_next.*profit(x_prime));
-            end
-            val_auct(a+1) = a*max(fBar_next)*phi(x*t);
+        t = theta(:,j);
+        val_resp = zeros(1,2);
+        for y=0:1
+            p_next = update_p(x,y,theta,p);
+            val_resp(y+1) = inner_max(X,theta,p_next,pAuct);
         end
-        val_theta(j) = sum(val_auct.*probAuct);
+        val_theta(j) = val_resp(1)*(1-phi(x*t))+val_resp(2)*phi(x*t);
     end
-    vKG(alt) = sum(val_theta.*p) - best;  
+    vKG(alt) = sum(val_theta.*p) - x_best;
 end
 
+disp(vKG);
+
+% Convert offline KG values to online ones.
+
+% Choose alternative action that maximizes KG.
+[~,indexMax] = max(vKG);
+xChoice = X(indexMax,:);
+
+end
+
+function best = inner_max(X,theta,prob,pAuct)
+
+[M,~] = size(X);
+[~,K] = size(theta);
+[~,A] = size(pAuct);
+A = A - 1;
+
+val_x = zeros(1,M);
+for alt=1:M
+    x = X(alt,:);
+    val_theta = zeros(1,K);
+    for k=1:K
+        t = theta(:,k);
+        val_auct = zeros(1,A+1);
+        % For a = 0, val_auct is already (correctly) 0
+        for a=1:A
+            % Only consider the case when y=1 because when y=0, profit=0
+            val_auct(a+1) = a*profit(x)*phi(x*t);
+        end
+        val_theta(k) = sum(val_auct.*pAuct);
+    end
+    val_x(alt) = sum(val_theta.*prob);
+end
+
+best = max(val_x);
+
+end
 
