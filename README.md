@@ -21,6 +21,7 @@ Helper functions:
 * update_p.m -- MATLAB function. Updates probability vector of the knowledge gradient policy given a bid and a response.
 
 Archive:
+
 * policy_logKG_2.m, policy_logKG_1Hot.m, policy_logKG.m -- MATLAB scripts. Tried to calls Yingfei's logKG function to use a knowledge gradient policy combined with a logistic regression belief model. 
 
 * policy_primitive.m -- MATLAB script. Uses data from SimulatorOutput.csv to come up with optimal bid values for each hour of the week. Uses some of the logic of the original "Vanilla Model" policy.
