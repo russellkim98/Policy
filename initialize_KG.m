@@ -15,8 +15,8 @@ disc = [0:0.25:2,2.5:0.5:10]';
 X = [ones(M,1) disc];
 
 % thetas we are deciding between
-zero_disc = repmat([-5:-2.5:-15], 1, 2);
-one_disc = [ones(1,5) ones(1,5)*2];
+zero_disc = repmat([-4:-1:-8], 1, 2);
+one_disc = [ones(1,5) ones(1,5)*1.5];
 theta = [zero_disc ; one_disc];
 
 % prior distribution of p
