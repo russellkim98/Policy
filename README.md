@@ -6,11 +6,13 @@
 
 ### Description of (Current Version of) Files ###
 
-* initialize_KG.m -- MATLAB function. Initializes knowledge gradient policy. Meant to be called once at the start of a run of simulations. Returns 3 matrices that should be stored and passed on in the first call to KG. 
+* initialize_KG.m -- MATLAB function. Initializes knowledge gradient policy. Meant to be called once at the start of a run of simulations. Returns 3 matrices that should be stored and passed on in the first call to KG_hr. 
 
-* KG.m -- MATLAB function. Chooses a bid using the knowledge gradient policy. Takes in 3 matrices and returns 3 matrices and a bid value, all to be stored and passed on in the next call to learner_KG. 
+* KG_hr.m -- MATLAB function. Chooses a bid for the next hour using the knowledge gradient policy. Takes in 3 matrices and returns 3 matrices and a bid value, all to be stored and passed on in the next call to learner_KG_hr. 
 
-* learner_KG.m -- MATLAB function. Updates the knowledge gradient policy to reflect most recent bid and response. Takes in 3 matrices, a bid and its response. Returns 3 matrices to be stored and passed on in the next call to KG. 
+* learner_KG_hr.m -- MATLAB function. Updates the knowledge gradient policy to reflect most recent bid and responses. Takes in 3 matrices, a bid, number of auctions and number of clicks for the hour. Returns 3 matrices to be stored and passed on in the next call to KG_hr. 
+
+* KG.m and learner_KG.m -- MATLAB functions for knowledge gradient policy for bidding per auction. 
 
 Helper functions:
 
@@ -18,7 +20,9 @@ Helper functions:
 
 * profit.m -- MATLAB function. Estimates profit after a clickthrough given a bid value.
 
-* update_p.m -- MATLAB function. Updates probability vector of the knowledge gradient policy given a bid and a response.
+* update_p_hr.m -- MATLAB function. Updates probability vector of the knowledge gradient policy for a bid and responses over the hour. 
+
+* update_p.m -- MATLAB function. Updates probability vector of the knowledge gradient policy given a bid and a response from an auction.
 
 Archive:
 
