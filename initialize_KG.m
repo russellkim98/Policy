@@ -8,15 +8,15 @@ function [X,theta,p] = initialize_KG()
 
 d = 2;   % # of dimensions
 M = 25;  % # of alternatives
-K = 25;  % # of possible coefficient vectors
+K = 10;  % # of possible coefficient vectors
 
 % alternatives that we are deciding between
 disc = [0:0.25:2,2.5:0.5:10]';
 X = [ones(M,1) disc];
 
 % thetas we are deciding between
-zero_disc = repmat([-5:-2.5:-15], 1, 5);
-one_disc = [ones(1,5) ones(1,5)*2 ones(1,5)*3 ones(1,5)*4 ones(1,5)*5];
+zero_disc = repmat([-5:-2.5:-15], 1, 2);
+one_disc = [ones(1,5) ones(1,5)*2];
 theta = [zero_disc ; one_disc];
 
 % prior distribution of p

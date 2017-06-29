@@ -1,7 +1,6 @@
-% Takes in an alternative x, a response y, a matrix theta of possible
-% coeffient vectors, and a matrix p of probabilities that each theta vector
-% is the true representation. Returns an updated matrix p_new based on the
-% Bayesian updating equations.
+% Updates the p vector after seeing one response in a given auction.
+% Takes in an alternative x, a response y, a theta matrix, and a p vector.
+% Returns an updated matrix p_new based on the Bayesian updating equations.
 
 function p_new = update_p(x,y,theta,p)
 
