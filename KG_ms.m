@@ -1,4 +1,9 @@
-function [X,theta,p,bid,vKG] = KG_ms(X,theta,p,tau)
+% Decides a bid to place looking ahead tau auctions. Takes in a matrix X of
+% alternative actions, a theta matrix, a vector p, a tau value, and a theta
+% value for the time horizon. Returns the bid that maximizes the knowledge
+% gradient, and the given X, theta, and p matrices.
+
+function [X,theta,p,bid] = KG_ms(X,theta,p,t_hor,tau)
 
 [M,~] = size(X);     % # of alternatives and dimensions
 [~,K] = size(theta); % # of possible coefficient vectors
@@ -28,7 +33,7 @@ end
 % Convert offline KG values to online ones.
 vOLKG = zeros(size(vKG));
 for alt=1:M
-    vOLKG(alt) = vKG(alt) + rewards(alt);
+    vOLKG(alt) = rewards(alt) + t_hor*vKG(alt);
 end
 
 % Choose bid that maximizes KG.
@@ -57,6 +62,22 @@ for alt=1:M
 end
 
 best = max(val_x);
+
+end
+
+% Local function that updates p for a given alternative, a number of
+% auctions, and a number of clicks.
+function p_new = update_p_ms(x,nA,nC,theta,p)
+
+[~,K] = size(theta);
+p_new = zeros(1,K);
+
+for k=1:K
+    t = theta(:,k);
+    p_new(k) = nchoosek(nA,nC)*phi(x*t)^nC*(1-phi(x*t))^(nA-nC)*p(k);
+end
+denom = sum(p_new);
+p_new = p_new./denom;
 
 end
 

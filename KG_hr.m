@@ -1,8 +1,9 @@
-% Decides a bid to place for the next hour. Takes in a matrix X of
-% alternative actions, a theta matrix, and a vector p. Returns the bid that
-% maximizes the knowledge gradient, and the given X, theta, and p matrices.
+% Decides a bid to place considering the next hour as a single period. 
+% Takes in a matrix X of alternative actions, a theta matrix, a vector p, 
+% and a theta value for the time horizon. Returns the bid that maximizes 
+% the knowledge gradient, and the given X, theta, and p matrices.
 
-function [X,theta,p,bid] = KG_hr(X,theta,p)
+function [X,theta,p,bid] = KG_hr(X,theta,p,t_hor)
 
 [M,~] = size(X);     % # of alternatives and dimensions
 [~,K] = size(theta); % # of possible coefficient vectors
@@ -45,11 +46,11 @@ end
 % Convert offline KG values to online ones.
 vOLKG = zeros(size(vKG));
 for alt=1:M
-    vOLKG(alt) = vKG(alt) + rewards(alt);
+    vOLKG(alt) = rewards(alt) + t_hor*vKG(alt);
 end
 
 % Choose bid that maximizes KG.
-[~,indexMax] = max(vKG);
+[~,indexMax] = max(vOLKG);
 bid = X(indexMax,2);
 
 end
@@ -87,5 +88,22 @@ best = max(val_x);
 
 end
 
+% Local function that updates p for a given alternative, a number of
+% auctions, and a number of clicks.
+function p_next = update_p_hr(x,nAuct,nClick,theta,p)
 
+N = nAuct - nClick;
+p_next = p;
+
+% Update p for all of the clicks that you saw.
+for c=1:nClick
+    p_next = update_p(x,1,theta,p_next);
+end
+
+% Update p for all of the no-click auctions. 
+for n=1:N
+    p_next = update_p(x,0,theta,p_next);
+end
+
+end
 
