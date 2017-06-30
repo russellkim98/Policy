@@ -5,21 +5,23 @@
 function p_new = update_p(x,y,theta,p)
 
 [~,K] = size(theta);
-p_new = zeros([size(p)]);
+p_new = zeros(1,K);
 
 % In this case, you're interested in probability of a click.
 if y == 1
-    denom = sum(phi(x*theta).*p);
     for k=1:K
-        p_new(k) = phi(x*theta(:,k))*p(k)/denom;
+        p_new(k) = phi(x*theta(:,k))*p(k);
     end
+    denom = sum(p_new);
+    p_new = p_new./denom;
     
 % In this case, you're interested in probability of no click.
 else
-    denom = sum((1-phi(x*theta)).*p);
     for k=1:K
-        p_new(k) = (1-phi(x*theta(:,k)))*p(k)/denom;
+        p_new(k) = (1-phi(x*theta(:,k)))*p(k);
     end
+    denom = sum(p_new);
+    p_new = p_new./denom;
 end
 
 end

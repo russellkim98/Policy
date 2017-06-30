@@ -1,8 +1,4 @@
-% Decides a bid to place for the next auction. Takes in a matrix X of
-% alternative actions, a theta matrix, and a p vector. Returns the bid that
-% maximizes the knowledge gradient, and the given X, theta, and p matrices.
-
-function [X,theta,p,bid] = KG(X,theta,p)
+function [X,theta,p,bid,vKG] = KG_ms(X,theta,p,tau)
 
 [M,~] = size(X);     % # of alternatives and dimensions
 [~,K] = size(theta); % # of possible coefficient vectors
@@ -17,12 +13,14 @@ for alt=1:M
     val_theta = zeros(1,K);
     for j=1:K
         t = theta(:,j);
-        val_resp = zeros(1,2);
-        for y=0:1
-            p_next = update_p(x,y,theta,p);
-            [~,val_resp(y+1)] = inner_max(X,theta,p_next);
+        val_click = zeros(1,tau+1);
+        for y=0:tau
+            p_next = update_p_ms(x,tau,y,theta,p);
+            [~,val_click(y+1)] = inner_max(X,theta,p_next);
+            pClick = nchoosek(tau,y)*phi(x*t)^y*(1-phi(x*t))^(tau-y);
+            val_click(y+1) = val_click(y+1) * pClick;
         end
-        val_theta(j) = val_resp(1)*(1-phi(x*t))+val_resp(2)*phi(x*t);
+        val_theta(j) = sum(val_click);
     end
     vKG(alt) = sum(val_theta.*p) - F_best;
 end
@@ -61,4 +59,5 @@ end
 best = max(val_x);
 
 end
+
 
