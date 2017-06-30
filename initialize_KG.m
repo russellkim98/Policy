@@ -6,7 +6,6 @@
 
 function [X,theta,p] = initialize_KG()
 
-d = 2;   % # of dimensions
 M = 25;  % # of alternatives
 K = 10;  % # of possible coefficient vectors
 
@@ -15,9 +14,7 @@ disc = [0:0.25:2,2.5:0.5:10]';
 X = [ones(M,1) disc];
 
 % thetas we are deciding between
-zero_disc = repmat([-4:-1:-8], 1, 2);
-one_disc = [ones(1,5) ones(1,5)*1.5];
-theta = [zero_disc ; one_disc];
+theta = [-5 -6.5 -8 -9.5 -2 -3.5 -5 -8 -9.5 -11; 1 1 1 1 0.5 0.5 0.5 1.5 1.5 1.5];
 
 % prior distribution of p
 p_0 = ones(1,K)./K;

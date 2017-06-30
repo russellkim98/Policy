@@ -9,25 +9,57 @@ X = [ones(M,1) disc];
 mu = 0.8;
 A = floor(mu + 3*sqrt(mu));
 
-thetaStar=[-8;1.5];
+thetaStar=[-6.5;1];
 truth = phi(X*thetaStar);
 
-for tau=1:50
+for run=1:5
+    
+    ax = gca;
+    ax.ColorOrderIndex = 1;
+    
     [a,b,c] = initialize_KG();
-    [a,b,c,bid,vKG] = KG_ms(a,b,c,tau);
-    if tau == 1
-       scatter(tau,vKG(1));
-       axis([1 50 0 1.5]);
-       hold on
-    else
-       scatter(tau,vKG(1))
+    for i=1:50
+        [a,b,c,bid] = KG(a,b,c);
+        bidIndex = find(X(:,2) == bid);
+        y = binornd(1,truth(bidIndex));
+        [a,b,c] = learner_KG(a,b,c,bid,y);
     end
-    %bidIndex = find(X(:,2) == bid);
-    %numAucts = randi(A+1)-1;
-    %numClicks = binornd(numAucts,truth(bidIndex));
-    %[a,b,c] = learner_KG_hr(a,b,c,bid,numAucts,numClicks);
+    if run == 1
+        plot(1:10,c);
+        axis([1 10 0 1]);
+        hold on;
+    else
+        plot(1:10,c);
+    end
+    
+    [d,e,f] = initialize_KG();
+    for i=1:50
+        [d,e,f,bid] = KG_ms(d,e,f,25);
+        bidIndex = find(X(:,2) == bid);
+        y = binornd(1,truth(bidIndex));
+        [d,e,f] = learner_KG(d,e,f,bid,y);
+    end
+    plot(f);
+    
 end
-%hold off
+
+%Tune for number of steps to look ahead in mulitstep lookahead
+% for tau=1:50
+%     [a,b,c] = initialize_KG();
+%     [a,b,c,bid,vKG] = KG_ms(a,b,c,tau);
+%     if tau == 1
+%        scatter(ones(1,M)*tau,vKG);
+%        axis([1 50 0 1.5]);
+%        hold on
+%     else
+%        scatter(ones(1,M)*tau,vKG);
+%     end
+%     %bidIndex = find(X(:,2) == bid);
+%     %numAucts = randi(A+1)-1;
+%     %numClicks = binornd(numAucts,truth(bidIndex));
+%     %[a,b,c] = learner_KG_hr(a,b,c,bid,numAucts,numClicks);
+% end
+% hold off
 %if run == 1
 %    plot(1:10,c);
 %    axis([1 10 0 1]);
