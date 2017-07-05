@@ -37,7 +37,7 @@ for alt=1:M
 end
 
 % Choose bid that maximizes KG.
-[~,indexMax] = max(vKG);
+[~,indexMax] = max(vOLKG);
 bid = X(indexMax,2);
 
 end
