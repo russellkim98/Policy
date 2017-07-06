@@ -34,7 +34,7 @@ Knowledge Gradient Policy Considering Next Hour as a Single Period
 
 t_hor = t;
 
-for i=1:n
+for i=1:N
     [a,b,c,bid] = KG_hr(a,b,c,t_hor);
     numAucts = n;
     numClicks = m;
@@ -51,7 +51,7 @@ Multi-step Look-ahead Knowledge Gradient Policy Considering Next Auction as a Si
 t_hor = t;
 tau = t2;
 
-for i=1:n
+for i=1:N
     [a,b,c,bid] = KG_ms(a,b,c,t_hor,tau);
     numAucts = n;
     numClicks = m;
