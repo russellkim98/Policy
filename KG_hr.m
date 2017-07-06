@@ -14,8 +14,8 @@ function [X,theta,p,bid] = KG_hr(X,theta,p,t_hor)
 % might want to vary mu later.
 mu = 0.8;
 A = floor(mu + 3*sqrt(mu));
-pTemp = poisspdf(0:A-1,mu);
-pAuct = [pTemp 1-sum(pTemp)];
+pAuct = poisspdf(0:A-1,mu);
+pAuct = [pAuct 1-sum(pAuct)];
 
 % Calculate best value without thinking about value of information
 [rewards,F_best] = inner_max(X,theta,p,pAuct);
@@ -31,10 +31,8 @@ for alt=1:M
         for a=0:A
             val_click = zeros(1,a+1);
             for c=0:a
-                p_next = update_p_hr(x,a,c,theta,p);
-                [~,val_click(c+1)] = inner_max(X,theta,p_next,pAuct);
-                pClick = nchoosek(a,c)*phi(x*t)^c*(1-phi(x*t))^(a-c);
-                val_click(c+1) = val_click(c+1) * pClick;
+                [~,val_click(c+1)] = inner_max(X,theta,update_p_hr(x,a,c,theta,p),pAuct);
+                val_click(c+1) = val_click(c+1)*nchoosek(a,c)*phi(x*t)^c*(1-phi(x*t))^(a-c);
             end
             val_auct(a+1) = sum(val_click);
         end
@@ -50,8 +48,8 @@ for alt=1:M
 end
 
 % Choose bid that maximizes KG.
-[~,indexMax] = max(vOLKG);
-bid = X(indexMax,2);
+[~,bid] = max(vOLKG);
+bid = X(bid,2);
 
 end
 
@@ -90,19 +88,18 @@ end
 
 % Local function that updates p for a given alternative, a number of
 % auctions, and a number of clicks.
-function p_next = update_p_hr(x,nAuct,nClick,theta,p)
+function p = update_p_hr(x,nAuct,nClick,theta,p)
 
 N = nAuct - nClick;
-p_next = p;
 
 % Update p for all of the clicks that you saw.
 for c=1:nClick
-    p_next = update_p(x,1,theta,p_next);
+    p = update_p(x,1,theta,p);
 end
 
 % Update p for all of the no-click auctions. 
 for n=1:N
-    p_next = update_p(x,0,theta,p_next);
+    p = update_p(x,0,theta,p);
 end
 
 end

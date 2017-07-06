@@ -20,10 +20,8 @@ for alt=1:M
         t = theta(:,j);
         val_click = zeros(1,tau+1);
         for y=0:tau
-            p_next = update_p_ms(x,tau,y,theta,p);
-            [~,val_click(y+1)] = inner_max(X,theta,p_next);
-            pClick = nchoosek(tau,y)*phi(x*t)^y*(1-phi(x*t))^(tau-y);
-            val_click(y+1) = val_click(y+1) * pClick;
+            [~,val_click(y+1)] = inner_max(X,theta,update_p_ms(x,tau,y,theta,p));
+            val_click(y+1) = val_click(y+1)*nchoosek(tau,y)*phi(x*t)^y*(1-phi(x*t))^(tau-y);
         end
         val_theta(j) = sum(val_click);
     end
@@ -37,8 +35,8 @@ for alt=1:M
 end
 
 % Choose bid that maximizes KG.
-[~,indexMax] = max(vOLKG);
-bid = X(indexMax,2);
+[~,bid] = max(vOLKG);
+bid = X(bid,2);
 
 end
 
