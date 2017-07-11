@@ -6,15 +6,14 @@
 
 function [X,theta,p] = initialize_KG()
 
-M = 25;  % # of alternatives
-K = 10;  % # of possible coefficient vectors
-
 % alternatives that we are deciding between
 disc = [0:0.25:2,2.5:0.5:10]';
-X = [ones(M,1) disc];
+X = [ones(length(disc),1) disc];
+M = length(X);
 
 % thetas we are deciding between
 theta = [-5 -6.5 -8 -9.5 -2 -3.5 -5 -8 -9.5 -11; 1 1 1 1 0.5 0.5 0.5 1.5 1.5 1.5];
+K = length(theta);
 
 % prior distribution of p
 p_0 = ones(1,K)./K;
