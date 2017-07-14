@@ -12,7 +12,7 @@ X = [ones(length(disc),1) disc];
 M = length(X);
 
 % thetas we are deciding between
-theta = [-5 -6.5 -8 -9.5 -2 -3.5 -5 -8 -9.5 -11; 1 1 1 1 0.5 0.5 0.5 1.5 1.5 1.5];
+theta = [-2 -3.5 -5 -6.5 -8 -9.5 -2 -3.5 -5 -3 -4.5 -8 -9.5 -11; 1 1 1 1 1 1 0.5 0.5 0.5 1.5 1.5 1.5 1.5 1.5];
 K = length(theta);
 
 % prior distribution of p

@@ -2,7 +2,6 @@
 global data;
 data = csvread('ParsedParam.csv',1,0);
 auctions = data_preprocessor();
-
 mu = max(auctions);
 A = floor(mu + 3*sqrt(mu));
 
@@ -12,7 +11,7 @@ X = [ones(length(disc),1) disc];
 M = length(X);
 
 % the truth
-theta = [-5 -6.5 -8 -9.5 -2 -3.5 -5 -8 -9.5 -11; 1 1 1 1 0.5 0.5 0.5 1.5 1.5 1.5];
+theta = [-2 -3.5 -5 -6.5 -8 -9.5 -2 -3.5 -5 -3 -4.5 -8 -9.5 -11; 1 1 1 1 1 1 0.5 0.5 0.5 1.5 1.5 1.5 1.5 1.5];
 K = length(theta);
 thetaStar=theta(:,8);
 truth = phi(X*thetaStar);
@@ -24,18 +23,19 @@ truth = phi(X*thetaStar);
 % probs = zeros(10,t_max);
 
 steps = 168;
+
 % for t_hor=1:t_max
 
 aucts = zeros(M,A+1);
 clicks = zeros(M,A+1);
 bids = zeros(steps,1);
+OC = zeros(steps,1);
 
 [a,b,c] = initialize_KG();
-%profit = 0;
-
 
 for i = 1:steps
-    [a,b,c,bid,KG,reward] = KG_hr(a,b,c);
+    profit = 0;
+    [a,b,c,bid,KG,reward] = KG_ms(a,b,c);
     bidIndex = find(X(:,2) == bid);
     numAucts = poissrnd(auctions(i));
     if numAucts > A
@@ -46,7 +46,7 @@ for i = 1:steps
     aucts(bidIndex,numAucts+1) = aucts(bidIndex,numAucts+1) + 1;
     clicks(bidIndex,numClicks+1) = clicks(bidIndex,numClicks+1) + 1;
     bids(i) = bid;
-    %profit = profit + numClicks*(42 - bid);  
+    profit = profit + numClicks*(20 - bid);  
     
     plot(1:M,KG);
     hold on;
