@@ -12,7 +12,7 @@
 ### Folders ###
 
 * logKG -- Contains all of the functions and testing modules for the KG policy adapted from Yingfei Wang's work, including init_logKG, logKG, and learner_logKG. 
-* sampledKG -- Contains all of the functions and testing modules for the KG policies using a sampled belief model, including initialize_KG, KG_hr, KG_ms, and learner_KG_hr. 
+* sampledKG -- Contains all of the functions and testing modules for the KG policies using a sampled belief model, including initialize_KG, KG_hr, KG_ms, and learner_KG_hr.
 
 ### Instructions ###
 
@@ -79,25 +79,3 @@ for i=1:N
     [a,b,c] = learner_logKG(a,b,c,bid,numAucts,numClicks);
 end
 ```
-
-### Other Functions ###
-
-* KG.m -- MATLAB function. Chooses a bid for the next auction.
-
-* phi.m -- MATLAB function. Logistic function. Estimates probability of getting a clickthrough.
-
-* profit.m -- MATLAB function. Estimates profit after a clickthrough given a bid value.
-
-* update_p.m -- MATLAB function. Updates probability vector of the knowledge gradient policy given a bid and a response from an auction.
-
-* test.m -- MATLAB script for test purposes. 
-
-Archive
-
-* policy_logKG_2.m, policy_logKG_1Hot.m, policy_logKG.m -- MATLAB scripts. Tried to calls Yingfei's logKG function to use a knowledge gradient policy combined with a logistic regression belief model. 
-
-* policy_primitive.m -- MATLAB script. Uses data from SimulatorOutput.csv to come up with optimal bid values for each hour of the week. Uses some of the logic of the original "Vanilla Model" policy.
-
-* SimulatorOutput.csv -- Modified version of ParsedParam.csv in Simulator repository. Includes all data points but only lists hour of the week, auctions, clicks, cost, and value per conversion.
-
-* logisticKG_yingfei -- Folder containing some of Yingfei's work.
