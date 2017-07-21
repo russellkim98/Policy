@@ -3,7 +3,7 @@
 ### What is this repository for? ###
 
 * Files for running various policies to decide bid values for auctions on Google Ads
-* Click [here](https://www.overleaf.com/10139484dwhqqgbkvfrc#/37428144/) to see mathematical models/write-ups of these policies.
+* Click [here](https://www.overleaf.com/10139484dwhqqgbkvfrc#/37428144/) to see mathematical models/write-ups of some of these policies.
 
 ### Requirements ###
  
@@ -11,22 +11,22 @@
 
 ### Instructions ###
 
-1. Call **initialize_KG** once at the start of a run of simulations to initialize the policy. Takes in no parameters. Returns 3 matrices that should be stored and passed on in the first call to KG_hr or KG_ms. 
+1. Call **initialize_KG** or **init_logKG** once at the start of a run of simulations to initialize a policy. Both take in no parameters and return 3 matrices that should be stored. For **initialize_KG**, pass on the 3 matrices in the first call to **KG_hr** or **KG_ms**. For **init_logKG**, pass on the 3 matrices in the first call to **logKG**. 
 
-2. Call **KG_hr** or **KG_ms** during each simulated hour to choose a bid. Each take in the 3 matrices that were previously stored and a tunable parameter t_hor representing the time horizon. **KG_ms** takes in an additional tunable parameter tau representing the number of auctions to look ahead. Each returns 3 matrices and a bid value, all to be stored and passed on in the next call to learner_KG_hr.
+2. Call **KG_hr**,**KG_ms**, or **logKG** during each simulated hour to choose a bid. Each take in the 3 matrices that were previously stored and a tunable parameter t_hor representing the time horizon. **KG_ms** takes in an additional tunable parameter tau representing the number of auctions to look ahead. Each returns 3 matrices and a bid value, all to be stored and passed on in the next call to **learner_KG_hr** or **learner_logKG**.
      * When t_hor is large, the policy places an emphasis on the value of learning and the profit you can make after learning; when t_hor is small, the policy places an emphasis the the profit you make while learning.
      * When tau is too large, the policy will look ahead too many auctions with diminishing marginal returns. When tau is too small, the policy isn't looking ahead enough auctions to fully make use of looking ahead. 
      * Fix t_hor (and tau if calling **KG_ms**) for each run of simulations.
 
 3. Simulate the number of auctions and the number of clicks during each simulated hour.
 
-4. Call **learner_KG_hr** during each simulated hour to update the policy. Takes in the 3 matrices that were previously stored, a bid, the number of auctions and the number of clicks for the hour. Returns 3 matrices to be stored and passed on in the next call to KG_hr or KG_ms.
+4. Call **learner_KG_hr** or **learner_logKG** during each simulated hour to update the policy. Takes in the 3 matrices that were previously stored, a bid, the number of auctions and the number of clicks for the hour. Returns 3 matrices to be stored and passed on in the next call to **KG_hr**,**KG_ms**, or **learner_logKG**.
 
-5. At the end of a run of simulations, the second and third matrices put out by **learner_KG_hr** give you the possible truths and their probabilities of being true, respectively. 
+5. At the end of a run of simulations, the second and third matrices put out by **learner_KG_hr** give you the possible truths and their probabilities of being true, respectively. The second and third matrices put out by **learner_logKG** give you the estimated mean and the inverse of the variance of the coefficients in the logistic function.
 
 ### Sample Code ###
 
-Knowledge Gradient Policy Considering Next Hour as a Single Period
+Knowledge Gradient Policy Considering Next Hour as a Single Period (Sampled Belief Model)
 
 ```
 #!matlab
@@ -42,7 +42,7 @@ for i=1:N
 end
 ```
 
-Multi-step Look-ahead Knowledge Gradient Policy Considering Next Auction as a Single Period
+Multi-step Look-ahead Knowledge Gradient Policy Considering Next Auction as a Single Period (Sampled Belief Model)
 
 ```
 #!matlab
@@ -53,6 +53,22 @@ tau = t2;
 
 for i=1:N
     [a,b,c,bid] = KG_ms(a,b,c,t_hor,tau);
+    numAucts = n;
+    numClicks = m;
+    [a,b,c] = learner_KG_hr(a,b,c,bid,numAucts,numClicks);
+end
+```
+
+Knowledge Gradient Policy Considering Next Auction as a Single Period (Parametric Belief Model)
+
+```
+#!matlab
+[a,b,c] = init_logKG();
+
+t_hor = t;
+
+for i=1:N
+    [a,b,c,bid] = logKG(a,b,c,t);
     numAucts = n;
     numClicks = m;
     [a,b,c] = learner_KG_hr(a,b,c,bid,numAucts,numClicks);
@@ -79,4 +95,4 @@ Archive
 
 * SimulatorOutput.csv -- Modified version of ParsedParam.csv in Simulator repository. Includes all data points but only lists hour of the week, auctions, clicks, cost, and value per conversion.
 
-* logisticKG_yingfei -- Folder containing some of Yingfei's work. The logKG.m file implements knowledge gradient policy under logistic belief models. Could be useful when implementing knowledge gradient policy for this project.
+* logisticKG_yingfei -- Folder containing some of Yingfei's work.
