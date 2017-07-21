@@ -9,18 +9,23 @@
  
 * MATLAB
 
+### Folders ###
+
+* logKG -- Contains all of the functions and testing modules for the KG policy adapted from Yingfei Wang's work, including init_logKG, logKG, and learner_logKG. 
+* sampledKG -- Contains all of the functions and testing modules for the KG policies using a sampled belief model, including initialize_KG, KG_hr, KG_ms, and learner_KG_hr. 
+
 ### Instructions ###
 
-1. Call **initialize_KG** or **init_logKG** once at the start of a run of simulations to initialize a policy. Both take in no parameters and return 3 matrices that should be stored. For **initialize_KG**, pass on the 3 matrices in the first call to **KG_hr** or **KG_ms**. For **init_logKG**, pass on the 3 matrices in the first call to **logKG**. 
+1. Call **initialize_KG** or **init_logKG** once at the start of a run of simulations to initialize a policy. Both take in no parameters and return 3 matrices that should be stored. For **initialize_KG**, pass on the 3 matrices in the first call to KG_hr or KG_ms. For **init_logKG**, pass on the 3 matrices in the first call to logKG. 
 
-2. Call **KG_hr**,**KG_ms**, or **logKG** during each simulated hour to choose a bid. Each take in the 3 matrices that were previously stored and a tunable parameter t_hor representing the time horizon. **KG_ms** takes in an additional tunable parameter tau representing the number of auctions to look ahead. Each returns 3 matrices and a bid value, all to be stored and passed on in the next call to **learner_KG_hr** or **learner_logKG**.
+2. Call **KG_hr**, **KG_ms**, or **logKG** during each simulated hour to choose a bid. Each take in the 3 matrices that were previously stored and a tunable parameter t_hor representing the time horizon. **KG_ms** takes in an additional tunable parameter tau representing the number of auctions to look ahead. Each returns 3 matrices and a bid value, all to be stored and passed on in the next call to learner_KG_hr or learner_logKG.
      * When t_hor is large, the policy places an emphasis on the value of learning and the profit you can make after learning; when t_hor is small, the policy places an emphasis the the profit you make while learning.
      * When tau is too large, the policy will look ahead too many auctions with diminishing marginal returns. When tau is too small, the policy isn't looking ahead enough auctions to fully make use of looking ahead. 
      * Fix t_hor (and tau if calling **KG_ms**) for each run of simulations.
 
 3. Simulate the number of auctions and the number of clicks during each simulated hour.
 
-4. Call **learner_KG_hr** or **learner_logKG** during each simulated hour to update the policy. Takes in the 3 matrices that were previously stored, a bid, the number of auctions and the number of clicks for the hour. Returns 3 matrices to be stored and passed on in the next call to **KG_hr**,**KG_ms**, or **learner_logKG**.
+4. Call **learner_KG_hr** or **learner_logKG** during each simulated hour to update the policy. Takes in the 3 matrices that were previously stored, a bid, the number of auctions and the number of clicks for the hour. Returns 3 matrices to be stored and passed on in the next call to KG_hr, KG_ms, or learner_logKG.
 
 5. At the end of a run of simulations, the second and third matrices put out by **learner_KG_hr** give you the possible truths and their probabilities of being true, respectively. The second and third matrices put out by **learner_logKG** give you the estimated mean and the inverse of the variance of the coefficients in the logistic function.
 
@@ -71,7 +76,7 @@ for i=1:N
     [a,b,c,bid] = logKG(a,b,c,t);
     numAucts = n;
     numClicks = m;
-    [a,b,c] = learner_KG_hr(a,b,c,bid,numAucts,numClicks);
+    [a,b,c] = learner_logKG(a,b,c,bid,numAucts,numClicks);
 end
 ```
 
