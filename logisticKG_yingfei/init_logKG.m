@@ -11,7 +11,7 @@ X = [ones(length(disc),1) disc];
 
 % prior distributions of w_est and q_est
 w_est=zeros(d,1);
-q_est=ones(d,1)/lambda;
+q_est=ones(d,1)/1;
 
 end
 
