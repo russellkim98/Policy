@@ -33,10 +33,10 @@ for alt=1:M
 end
 
 for h=1:hrs
-    % find KG and one-period rewards
+    % get bid
     [X,w_est,q_est,bid] = logKG(X,w_est,q_est,10);
     bidIndex = find(X(:,2) == bid);
-    % simulate number of auctions, clicks, and profit for the hour
+    % simulate number of auctions and clicks for the hour
     numAucts = poissrnd(auctions(h));
     if numAucts > A
         numAucts = A;
