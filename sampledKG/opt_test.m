@@ -6,7 +6,8 @@ X = [ones(length(disc),1) disc];
 M = length(X);
 
 % thetas we are deciding between
-theta = [-2 -3.5 -5 -6.5 -8 -9.5 -2 -3.5 -5 -3 -4.5 -8 -9.5 -11; 1 1 1 1 1 1 0.5 0.5 0.5 1.5 1.5 1.5 1.5 1.5];
+theta = [-1.5 -2.5 -3.5 -4.5 -5.5 -8 -1.5 -2.5 -3.5 -1.5 -2.5 -3.5 -4.5 -5.5; ...
+          1 1 1 1 1 1 0.75 0.75 0.75 1.5 1.5 1.5 1.5 1.5];
 K = length(theta);
 
 % Find expected profit given a click for each alternative.  
@@ -30,6 +31,7 @@ for k=1:K
 end
 
 % Graph the truth curves, label the optimal bid value by a '*'
+figure;
 hold on;
 for k=1:K
     t=theta(:,k);
@@ -42,10 +44,12 @@ for k=1:K
 end
 hold off;
 
-% Graph the optimal expected profits by their bid values. 
-figure;
-hold on;
-for k=1:K
-    scatter(bid_best(k),F_best(k),[],c,'o','filled');
-end
-hold off;
+disp(mean(bid_best));
+
+% % Graph the optimal expected profits by their bid values. 
+% figure;
+% hold on;
+% for k=1:K
+%     scatter(bid_best(k),F_best(k),[],c,'o','filled');
+% end
+% hold off;

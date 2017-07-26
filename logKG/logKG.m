@@ -5,10 +5,10 @@
 % a matrix X of alternative actions (discretized bids), matrices w_est
 % and q_est representing the distribution of the estimated coefficients of
 % the logistic function, and a time horizon tunable parameter for the
-% online application. Returns the given X, w_est, and q_est matrices as
-% well as the chosen bid. 
+% online application. Returns the w_est and q_est matrices as
+% well as the alternative vector with the chosen bid. 
 
-function [X,w_est,q_est,bid]=logKG(X,w_est,q_est,t_hor)
+function [x_chosen,w_est,q_est]=logKG(X,w_est,q_est,t_hor)
 
 [M,~] = size(X);
 KG = zeros(M,1);
@@ -16,7 +16,7 @@ KG = zeros(M,1);
 % Find expected profit given a click for each alternative.
 E_profit = zeros(M,1);
 for alt=1:M
-    E_profit(alt) = profit(X(alt,:));
+    E_profit(alt) = profit(X(alt,1));
 end
 
 for i=1:M % for each alternative, calculate the KG value
@@ -46,7 +46,7 @@ end
 
 % online extension
 OLKG = E_profit.*sigmoid(X*w_est) + t_hor*KG;
-[~,bidIndex] = max(OLKG);
-bid = X(bidIndex,2);
+[~,i] = max(OLKG);
+x_chosen = X(i,:)';
 
 end

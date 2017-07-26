@@ -1,11 +1,9 @@
 % Updates a logKG policy after seeing responses over an hour. Takes in
-% an X matrix, a w_est vector, a q_est vector, the bid placed, the number of
-% auctions, and the number of clicks. Returns the given X matrix as well as
-% updated w_est and q_est vectors.
+% an alternative vector x, a w_est vector, a q_est vector, the number of
+% auctions, and the number of clicks. Returns the updated w_est and q_est vectors.
 
-function [X,w_est,q_est] = learner_logKG(X,w_est,q_est,bid,nAuct,nClick)
+function [w_est,q_est] = learner_logKG(x,w_est,q_est,nAuct,nClick)
 
-x = [1 bid]';
 N = nAuct - nClick;
 
 % Update w_est and q_est for all of the clicks that you saw.

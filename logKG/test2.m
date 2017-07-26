@@ -12,30 +12,32 @@ A = floor(mu + 3*sqrt(mu));
 hrs = 168;
 
 % initialize policy
-[X,w_est,q_est] = init_logKG();
-[M,d] = size(X);
+[X,w_est,q_est] = init_logKG(2);
+X(:,2) = 1;
+[M,~] = size(X);
 
 % THE TRUTH
 while 1
     wStar_0 = normrnd(-7,1);
     wStar_1 = normrnd(1,1);
-    wStar=[wStar_0;wStar_1];
+    wStar=[wStar_1;wStar_0];
     truth=sigmoid(X*wStar);
     if truth(M) > 0.1
         break
     end
 end
 
-% Find expected profit given a click for each alternative.
+% Find expected profit given a click for each bid.
 E_profit = zeros(M,1);
 for alt=1:M
-    E_profit(alt) = profit(X(alt,:));
+    E_profit(alt) = profit(X(alt,1));
 end
 
 for h=1:hrs
     % get bid
-    [X,w_est,q_est,bid] = logKG(X,w_est,q_est,10);
-    bidIndex = find(X(:,2) == bid);
+    [x_choice,w_est,q_est] = logKG(X,w_est,q_est,10);
+    bid = x_choice(1);
+    bidIndex = find(X(:,1) == bid);
     % simulate number of auctions and clicks for the hour
     numAucts = poissrnd(auctions(h));
     if numAucts > A
@@ -43,19 +45,19 @@ for h=1:hrs
     end
     numClicks = binornd(numAucts,truth(bidIndex));
     % update estimates of w and q
-    [X,w_est,q_est] = learner_logKG(X,w_est,q_est,bid,numAucts,numClicks);
+    [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,numAucts,numClicks);
 end
 
 % graph to see error
 figure;
-x = linspace(0,10)';
-xX = [ones(length(x),1) x];
+alt = linspace(0,10)';
+xX = [alt ones(length(alt),1)];
 trueCurve = sigmoid(xX*wStar);
 estCurve = sigmoid(xX*w_est);
-h = plot(x,trueCurve);
+h = plot(alt,trueCurve);
 hold on;
-plot(x,estCurve);
+plot(alt,estCurve);
 
 [~,alt_best] = max(E_profit.*truth);
-opt_bid = X(alt_best,2);
-scatter(opt_bid,sigmoid([1 opt_bid]*wStar),[],get(h,'Color'),'*');
+opt_bid = X(alt_best,1);
+scatter(opt_bid,sigmoid([opt_bid 1]*wStar),[],get(h,'Color'),'*');
