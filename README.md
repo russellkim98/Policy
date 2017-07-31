@@ -17,8 +17,8 @@
 ### Instructions ###
 
 1. Call **initialize_KG** or **init_logKG** once at the start of a run of simulations to initialize a policy. **initialize_KG** takes in no parameters. **init_logKG** takes in an integer value representing the dimension of the problem. Both return 3 matrices that should be stored. For **initialize_KG**, pass on the 3 matrices in the first call to KG_hr or KG_ms. For **init_logKG**, pass on the 3 matrices in the first call to logKG.
-*  Without any location attributes, the dimension of the problem for **init_logKG** is 2 (representing a logistic function with a constant and one variable representing the bid value).
-*  With location attributes, the dimension is 1 + the number of indicator variables in play. For example, if data is coming from 5 distinct cities (all in the same region/country), d = 6. 
+    * Without any location attributes, the dimension of the problem for **init_logKG** is 2 (representing a logistic function with a constant and one variable representing the bid value).
+    * With location attributes, the dimension is 1 + the number of indicator variables in play. For example, if data is coming from 5 distinct cities (all in the same region/country), d = 6. 
 
 2. Call **KG_hr**, **KG_ms**, or **logKG** during each simulated hour to choose a bid. Each take in the 3 matrices that were previously stored and a tunable parameter t_hor representing the time horizon. **KG_ms** takes in an additional tunable parameter tau representing the number of auctions to look ahead. **KG_hr** and **KG_ms** return 3 matrices and a bid value, all to be stored and passed on in the next call to learner_KG_hr. **logKG** returns a vector representing the chosen alternative and 2 matrices, all to be stored and passed on in the next call to learner_logKG. The first value in the first vector returned by **logKG** is the bid value. 
      * When t_hor is large, the policy places an emphasis on the value of learning and the profit you can make after learning; when t_hor is small, the policy places an emphasis the the profit you make while learning.
