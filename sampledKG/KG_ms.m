@@ -3,7 +3,7 @@
 % value for the time horizon. Returns the bid that maximizes the knowledge
 % gradient, and the given X, theta, and p matrices.
 
-function [X,theta,p,bid,vKG,rewards] = KG_ms(X,theta,p,tau)
+function [X,theta,p,bid] = KG_ms(X,theta,p,t_hor,tau)
 
 [M,~] = size(X);     % # of alternatives and dimensions
 [~,K] = size(theta); % # of possible coefficient vectors
@@ -29,13 +29,13 @@ for alt=1:M
 end
 
 % Convert offline KG values to online ones.
-% vOLKG = zeros(size(vKG));
-% for alt=1:M
-%     vOLKG(alt) = rewards(alt) + t_hor*vKG(alt);
-% end
+vOLKG = zeros(size(vKG));
+for alt=1:M
+    vOLKG(alt) = rewards(alt) + t_hor*vKG(alt);
+end
 
-% Choose bid that maximizes KG.
-[~,bid] = max(vKG);
+% Choose bid that maximizes OLKG.
+[~,bid] = max(vOLKG);
 bid = X(bid,2);
 
 end

@@ -16,8 +16,8 @@ X = [ones(length(disc),1) disc];
 M = length(X);
 
 % thetas we are deciding between
-theta = [-2 -3.5 -3 -4.5      -5 -6.5 -8 -9.5 -11 -2     -8 -9.5 -3.5 -5; ...
-    1   1  1.5 1.5       1   1  1.5 1.5 1.5 0.5     1   1   0.5 0.5];
+theta = [-1.5 -2.5 -1.5 -2.5     -5 -6.5 -8 -9.5 -11 -2     -9 -10 -4.5 -5.5; ...
+          1 1 1.5 1.5     1 1 1.5 1.5 1.5 0.5     1 1 0.5 0.5];
 theta_grp = [1 1 1 1 2 2 2 2 2 2 3 3 3 3];
 K = length(theta);
 
@@ -28,15 +28,14 @@ truth = phi(X*thetaStar);
 
 % input
 tau = 20;
-hrs = 168;
+hrs = 72;
 
 % Tuning
 [a,b,c] = initialize_KG();
 KG_all = zeros(M,hrs);
 reward_all = zeros(M,hrs);
 for i = 1:hrs
-    % change truth 3 times
-    if i == 42 || i == 84 || i == 126
+    if mod(i,10) == 0
         disp(altTruth);
         altNewTruth = ceil(rand*K);
         while theta_grp(altNewTruth) == theta_grp(altTruth)
@@ -57,10 +56,8 @@ for i = 1:hrs
     numClicks = binornd(numAucts,truth(bidIndex));
     [a,b,c] = learner_KG_hr(a,b,c,bid,numAucts,numClicks);
     % store one-period reward and offline KG values
-    for alt=1:M
-        KG_all(alt,i) = KG(alt);
-        reward_all(alt,i) = reward(alt);
-    end
+    KG_all(:,i) = KG;
+    reward_all(:,i) = reward;
     
     if mod(i,10) == 0
         disp(c);
