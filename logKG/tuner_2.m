@@ -23,6 +23,7 @@ A = floor(mu + 3*sqrt(mu));
 X(:,2) = 1;
 [M,d] = size(X);
 OC_all = zeros(length(t_hors),1);
+rand_all = zeros(length(t_hors),1);
 
 % Find expected profit given a click for each alternative.
 E_profit = zeros(M,1);
@@ -38,6 +39,7 @@ for r=1:runs
         X(:,2) = 1;
         % opportunity cost over the whole week for this truth/time horizon
         OC_week = 0;
+        rand_week = 0;
         
         % Set a reasonable truth
         while 1
@@ -76,10 +78,13 @@ for r=1:runs
             end
             numClicks = binornd(numAucts,truth(bidIndex));
             OC_week = OC_week + binornd(numAucts,truth(alt_best))*E_profit(alt_best) - numClicks*E_profit(bidIndex);
+            alt_rand = randi(M);
+            rand_week = rand_week + binornd(numAucts,truth(alt_rand))*E_profit(alt_rand);
             % update estimates of w and q
             [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,numAucts,numClicks);
         end
         OC_all(t) = OC_all(t) + OC_week;
+        rand_all(t) = rand_all(t) + rand_week;
     end
     
     r
@@ -89,7 +94,10 @@ end
 % Graph opportunity cost
 figure;
 OC_avg = OC_all/runs;
+rand_avg = rand_all/runs;
 plot(t_hors,OC_avg);
+hold on;
+plot(t_hors,rand_avg);
 title('Average weekly OC varying time horizon tunable parameter for logKG (transient truth)');
 xlabel('Value of tunable parameter');
 ylabel('OC over the week, averaged over 25 runs (in dollars)');

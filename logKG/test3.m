@@ -1,11 +1,11 @@
 % A module to test logKG/init_logKG/learner_logKG, specifically with
-% auctions and clicks coming from 2 distinct locations. Simulates a week on
+% auctions and clicks coming from distinct locations. Simulates a week on
 % a per hour basis. Starts off with a normal prior distribution of the
 % coefficients of the logistic function and tries to learn the true curve
 % with an online logKG policy. 
 
 hrs = 168;        % Number of steps in each simulation
-numLocations = 2; % Number of location indicator variables
+numLocations = 5; % Number of location indicator variables
 
 % Mean number of auctions per hour of week
 global data;
@@ -14,21 +14,28 @@ auctions = data_preprocessor();
 mu = max(auctions);
 A = floor(mu + 3*sqrt(mu));
 
-% The true coefficients, for the bid, location 1, and location 2
-wStar = zeros(numLocations+1,1);
-wStar(1) = normrnd(1,1);
-wStar(2) = normrnd(-8,1);
-wStar(3) = normrnd(-4,1);
-wStar
-
-% Initialize policy and set truths for each location
-[X,w_est,q_est] = init_logKG(numLocations+1);
-[M,~] = size(X);
-truth = zeros(numLocations,M);
-for loc=1:numLocations
-    [X,~,~] = init_logKG(numLocations+1);
-    X(:,loc+1) = 1;
-    truth(loc,:) = sigmoid(X*wStar);
+while 1
+    % The true coefficients, for the bid and locations
+    wStar = zeros(numLocations+1,1);
+    wStar(1) = normrnd(1,1);
+    wStar(2) = normrnd(-8,1);
+    wStar(3) = normrnd(-7,1);
+    wStar(4) = normrnd(-6,1);
+    wStar(5) = normrnd(-5,1);
+    wStar(6) = normrnd(-4,1);
+    
+    % Initialize policy and set truths for each location
+    [X,w_est,q_est] = init_logKG(numLocations+1);
+    [M,~] = size(X);
+    truth = zeros(numLocations,M);
+    for loc=1:numLocations
+        [X,~,~] = init_logKG(numLocations+1);
+        X(:,loc+1) = 1;
+        truth(loc,:) = sigmoid(X*wStar);
+    end
+    if sum(truth(:,M) < 0.1) == 0
+        break;
+    end
 end
 
 % Find expected profit given a click for each bid.
@@ -67,10 +74,11 @@ for loc=1:numLocations
     h = plot(alt,trueCurve);
     hold on;
     plot(alt,estCurve,'--','Color',get(h,'Color'));
+    
+    [~,alt_best] = max(E_profit.*truth(loc,:)');
+    opt_bid = X(alt_best,1);
+    opt_alt = [opt_bid zeros(1,numLocations)];
+    opt_alt(1,loc+1) = 1;
+    opt_prob = sigmoid(opt_alt*wStar);
+    scatter(opt_bid,opt_prob,[],get(h,'Color'),'*');
 end
-
-% [~,alt_best] = max(E_profit.*truth);
-% opt_bid = X(alt_best,1);
-% scatter(opt_bid,sigmoid([opt_bid 1]*wStar),[],get(h,'Color'),'*');
-
-
