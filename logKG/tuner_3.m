@@ -4,13 +4,18 @@
 % for each possible value in t_hors, this test file simulates a week
 % on a per hour basis. Displays the average opportunity cost for each
 % value in t_hors over the number of runs. This tuner specifically
-% incorporates the location attributes (auctions/clicks coming from
-% distinct locations).
+% incorporates the location attributes (auctions/clicks coming from a
+% number of locations). 
 
-t_hors = 0:25:1000; % Various time horizons to be tested
-runs = 25;          % # of times each time horizon is tested
+global nCountries;
+nCountries = 8;
+
+nRegions = nCountries*nCountries;
+nCities = nCountries*nCountries*nCountries;
+numLocations = nCountries + nRegions + nCities; % # of indicator variables
+t_hors = 0:1:25;     % Various time horizons to be tested
+runs = 15;          % # of times each time horizon is tested
 hrs = 168;          % Number of steps in each simulation
-numLocations = 5;   % Number of location indicator variables
 
 % Mean number of auctions per hour of week
 global data;
@@ -34,22 +39,28 @@ for r=1:runs
     
     % Set a reasonable truth
     while 1
+        % True coefficients for bid, countries, regions, and cities
         wStar = zeros(numLocations+1,1);
-        wStar(1) = normrnd(1,1);
-        wStar(2) = normrnd(-8,1);
-        wStar(3) = normrnd(-7,1);
-        wStar(4) = normrnd(-6,1);
-        wStar(5) = normrnd(-5,1);
-        wStar(6) = normrnd(-4,1);
+        wStar(1) = normrnd(0.75,1);
+        for c=1:nCountries
+            wStar(1+c) = normrnd(-1,1);
+        end
+        for g=1:nRegions
+            wStar(1+nCountries+g) = normrnd(-2,1);
+        end
+        for c=1:nCities
+            wStar(1+nCountries+nRegions+c) = normrnd(-3,1);
+        end
+        
         % Initialize policy and set truths for each location
         [X,~,~] = init_logKG(numLocations+1);
-        truth = zeros(numLocations,M);
-        for loc=1:numLocations
+        truth = zeros(nCities,M);
+        for city=1:nCities
             [X,~,~] = init_logKG(numLocations+1);
-            X(:,loc+1) = 1;
-            truth(loc,:) = sigmoid(X*wStar);
+            X = location(X,city);
+            truth(city,:) = sigmoid(X*wStar);
         end
-        if sum(truth(:,M) < 0.1) == 0
+        if sum(truth(:,M) < 0.01) == 0
             break;
         end
     end
@@ -62,10 +73,10 @@ for r=1:runs
         
         for h=1:hrs
             % randomly pick a location to set for the hour
-            loc = ceil(numLocations*rand);
-            [~,alt_best] = max(E_profit.*truth(loc,:)');
+            city = ceil(nCities*rand);
+            [~,alt_best] = max(E_profit.*truth(city,:)');
             [X,~,~] = init_logKG(numLocations+1);
-            X(:,loc+1) = 1;
+            X = location(X,city);
             % get bid
             [x_choice,w_est,q_est] = logKG(X,w_est,q_est,t_hors(t));
             bid = x_choice(1);
@@ -75,20 +86,17 @@ for r=1:runs
             if numAucts > A
                 numAucts = A;
             end
-            numClicks = binornd(numAucts,truth(loc,bidIndex));
-            OC_week = OC_week + binornd(numAucts,truth(loc,alt_best))*E_profit(alt_best) - numClicks*E_profit(bidIndex);
-            
+            numClicks = binornd(numAucts,truth(city,bidIndex));
+            OC_week = OC_week + binornd(numAucts,truth(city,alt_best))*E_profit(alt_best) - numClicks*E_profit(bidIndex);
             % update estimates of w and q
             [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,numAucts,numClicks);
         end
         OC_all(t) = OC_all(t) + OC_week;
-        
     end
     
     r
     
 end
-
 
 % Graph opportunity cost
 figure;
@@ -96,4 +104,18 @@ OC_avg = OC_all/runs;
 plot(t_hors,OC_avg);
 title('Average weekly OC varying time horizon tunable parameter for logKG');
 xlabel('Value of tunable parameter');
-ylabel('OC over the week, averaged over 25 runs (in dollars)');
+ylabel('OC over the week, averaged over 15 runs (in dollars)');
+
+function altMatrix = location(altMatrix,city)
+
+global nCountries;
+nRegions = nCountries*nCountries;
+nCities = nCountries*nCountries*nCountries;
+
+country = idivide((city - 1),int32(nCities/nCountries)) + 1;
+region = idivide((city - 1),int32(nCities/nRegions)) + 1;
+altMatrix(:,1+country) = 1;
+altMatrix(:,1+nCountries+region) = 1;
+altMatrix(:,1+nCountries+nRegions+city) = 1;
+
+end

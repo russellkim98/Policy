@@ -13,19 +13,21 @@ function [X,theta,p,bid] = KG_ms(X,theta,p,t_hor,tau)
 
 % Calculate offline knowledge gradient for each alternative x
 vKG = zeros(M,1);
-for alt=1:M
-    x = X(alt,:);
-    val_theta = zeros(1,K);
-    for j=1:K
-        t = theta(:,j);
-        val_click = zeros(1,tau+1);
-        for y=0:tau
-            [~,val_click(y+1)] = inner_max(X,theta,update_p_ms(x,tau,y,theta,p));
-            val_click(y+1) = val_click(y+1)*nchoosek(tau,y)*phi(x*t)^y*(1-phi(x*t))^(tau-y);
+if t_hor ~= 0
+    for alt=1:M
+        x = X(alt,:);
+        val_theta = zeros(1,K);
+        for j=1:K
+            t = theta(:,j);
+            val_click = zeros(1,tau+1);
+            for y=0:tau
+                [~,val_click(y+1)] = inner_max(X,theta,update_p_ms(x,tau,y,theta,p));
+                val_click(y+1) = val_click(y+1)*nchoosek(tau,y)*phi(x*t)^y*(1-phi(x*t))^(tau-y);
+            end
+            val_theta(j) = sum(val_click);
         end
-        val_theta(j) = sum(val_click);
+        vKG(alt) = sum(val_theta.*p) - F_best;
     end
-    vKG(alt) = sum(val_theta.*p) - F_best;
 end
 
 % Convert offline KG values to online ones.

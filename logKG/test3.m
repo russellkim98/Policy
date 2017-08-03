@@ -4,8 +4,13 @@
 % coefficients of the logistic function and tries to learn the true curve
 % with an online logKG policy. 
 
-hrs = 168;        % Number of steps in each simulation
-numLocations = 5; % Number of location indicator variables
+global nCountries;
+nCountries = 2;
+
+hrs = 168; % Number of steps in each simulation
+nRegions = nCountries*nCountries;
+nCities = nCountries*nCountries*nCountries;
+numLocations = nCountries + nRegions + nCities; % Number of location indicator variables
 
 % Mean number of auctions per hour of week
 global data;
@@ -14,26 +19,31 @@ auctions = data_preprocessor();
 mu = max(auctions);
 A = floor(mu + 3*sqrt(mu));
 
+% Set a reasonable truth
 while 1
-    % The true coefficients, for the bid and locations
+    % True coefficients for bid, countries, regions, and cities
     wStar = zeros(numLocations+1,1);
-    wStar(1) = normrnd(1,1);
-    wStar(2) = normrnd(-8,1);
-    wStar(3) = normrnd(-7,1);
-    wStar(4) = normrnd(-6,1);
-    wStar(5) = normrnd(-5,1);
-    wStar(6) = normrnd(-4,1);
+    wStar(1) = normrnd(0.75,1);
+    for c=1:nCountries
+        wStar(1+c) = normrnd(-1,1);
+    end
+    for r=1:nRegions
+        wStar(1+nCountries+r) = normrnd(-2,1);
+    end
+    for c=1:nCities
+        wStar(1+nCountries+nRegions+c) = normrnd(-3,1);
+    end
     
     % Initialize policy and set truths for each location
     [X,w_est,q_est] = init_logKG(numLocations+1);
     [M,~] = size(X);
-    truth = zeros(numLocations,M);
-    for loc=1:numLocations
+    truth = zeros(nCities,M);
+    for city=1:nCities
         [X,~,~] = init_logKG(numLocations+1);
-        X(:,loc+1) = 1;
-        truth(loc,:) = sigmoid(X*wStar);
+        X = location(X,city);
+        truth(city,:) = sigmoid(X*wStar);
     end
-    if sum(truth(:,M) < 0.1) == 0
+    if sum(truth(:,M) < 0.01) == 0
         break;
     end
 end
@@ -46,9 +56,9 @@ end
 
 for h=1:hrs
     % randomly pick a location to set for the hour
-    loc = ceil(numLocations*rand);
+    city = ceil(nCities*rand);
     [X,~,~] = init_logKG(numLocations+1);
-    X(:,loc+1) = 1;
+    X = location(X,city);
     % get bid
     [x_choice,w_est,q_est] = logKG(X,w_est,q_est,10);
     bid = x_choice(1);
@@ -58,7 +68,7 @@ for h=1:hrs
     if numAucts > A
         numAucts = A;
     end
-    numClicks = binornd(numAucts,truth(loc,bidIndex));
+    numClicks = binornd(numAucts,truth(city,bidIndex));
     % update estimates of w and q
     [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,numAucts,numClicks);
 end
@@ -66,19 +76,35 @@ end
 % graph to see error
 figure;
 alt = linspace(0,10)';
-for loc=1:numLocations
+for city = 1:nCities
     xX = [alt zeros(length(alt),numLocations)];
-    xX(:,loc+1) = 1;
+    xX = location(xX,city);
+    
     trueCurve = sigmoid(xX*wStar);
     estCurve = sigmoid(xX*w_est);
     h = plot(alt,trueCurve);
     hold on;
     plot(alt,estCurve,'--','Color',get(h,'Color'));
     
-    [~,alt_best] = max(E_profit.*truth(loc,:)');
+    [~,alt_best] = max(E_profit.*truth(city,:)');
     opt_bid = X(alt_best,1);
     opt_alt = [opt_bid zeros(1,numLocations)];
-    opt_alt(1,loc+1) = 1;
+    opt_alt = location(opt_alt,city);
     opt_prob = sigmoid(opt_alt*wStar);
     scatter(opt_bid,opt_prob,[],get(h,'Color'),'*');
+end
+
+
+function altMatrix = location(altMatrix,city)
+
+global nCountries;
+nRegions = nCountries*nCountries;
+nCities = nCountries*nCountries*nCountries;
+
+country = idivide((city - 1),int32(nCities/nCountries)) + 1;
+region = idivide((city - 1),int32(nCities/nRegions)) + 1;
+altMatrix(:,1+country) = 1;
+altMatrix(:,1+nCountries+region) = 1;
+altMatrix(:,1+nCountries+nRegions+city) = 1;
+
 end

@@ -7,12 +7,12 @@
 function [X,theta,p] = initialize_KG()
 
 % alternatives that we are deciding between
-disc = [0:0.25:2,2.5:0.5:10]';
+disc = (0:0.5:10)';
 X = [ones(length(disc),1) disc];
 
 % thetas we are deciding between
-theta = [-1.5 -2.5 -1.5 -2.5     -5 -6.5 -8 -9.5 -11 -2     -9 -10 -4.5 -5.5; ...
-          1 1 1.5 1.5     1 1 1.5 1.5 1.5 0.5     1 1 0.5 0.5];
+theta = [-1.5 -2.5 -3.5 -4.5 -5.5 -10 -1.5 -2.5 -3.5 -1.5 -2.5 -3.5 -4.5 -5.5; ...
+    1 1 1 1 1 1 0.75 0.75 0.75 1.5 1.5 1.5 1.5 1.5];
 K = length(theta);
 
 % prior distribution of p
