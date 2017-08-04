@@ -8,12 +8,12 @@
 % number of locations). 
 
 global nCountries;
-nCountries = 8;
+nCountries = 6;
 
 nRegions = nCountries*nCountries;
 nCities = nCountries*nCountries*nCountries;
 numLocations = nCountries + nRegions + nCities; % # of indicator variables
-t_hors = 0:1:25;     % Various time horizons to be tested
+t_hors = 0:25:500;     % Various time horizons to be tested
 runs = 15;          % # of times each time horizon is tested
 hrs = 168;          % Number of steps in each simulation
 
@@ -72,24 +72,27 @@ for r=1:runs
         OC_week = 0;
         
         for h=1:hrs
-            % randomly pick a location to set for the hour
-            city = ceil(nCities*rand);
-            [~,alt_best] = max(E_profit.*truth(city,:)');
-            [X,~,~] = init_logKG(numLocations+1);
-            X = location(X,city);
-            % get bid
-            [x_choice,w_est,q_est] = logKG(X,w_est,q_est,t_hors(t));
-            bid = x_choice(1);
-            bidIndex = find(X(:,1) == bid);
-            % simulate number of auctions, clicks, and OC for the hour
+            % simulate number of auctions for the hour
             numAucts = poissrnd(auctions(h));
             if numAucts > A
                 numAucts = A;
             end
-            numClicks = binornd(numAucts,truth(city,bidIndex));
-            OC_week = OC_week + binornd(numAucts,truth(city,alt_best))*E_profit(alt_best) - numClicks*E_profit(bidIndex);
-            % update estimates of w and q
-            [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,numAucts,numClicks);
+            for a=1:numAucts
+                % randomly pick a location to set for the auction
+                city = ceil(nCities*rand);
+                [~,alt_best] = max(E_profit.*truth(city,:)');
+                [X,~,~] = init_logKG(numLocations+1);
+                X = location(X,city);
+                % get bid for that auction
+                [x_choice,w_est,q_est] = logKG(X,w_est,q_est,t_hors(t));
+                bid = x_choice(1);
+                bidIndex = find(X(:,1) == bid);
+                % simulate click or not and update OC
+                click = binornd(1,truth(city,bidIndex));
+                OC_week = OC_week + binornd(1,truth(city,alt_best))*E_profit(alt_best) - click*E_profit(bidIndex);
+                % update estimates of w and q
+                [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,1,click);
+            end
         end
         OC_all(t) = OC_all(t) + OC_week;
     end

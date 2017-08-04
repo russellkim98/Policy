@@ -55,22 +55,27 @@ for alt=1:M
 end
 
 for h=1:hrs
-    % randomly pick a location to set for the hour
-    city = ceil(nCities*rand);
-    [X,~,~] = init_logKG(numLocations+1);
-    X = location(X,city);
-    % get bid
-    [x_choice,w_est,q_est] = logKG(X,w_est,q_est,10);
-    bid = x_choice(1);
-    bidIndex = find(X(:,1) == bid);
-    % simulate number of auctions and clicks for the hour
+    % simulate number of auctions for the hour
     numAucts = poissrnd(auctions(h));
     if numAucts > A
         numAucts = A;
     end
-    numClicks = binornd(numAucts,truth(city,bidIndex));
-    % update estimates of w and q
-    [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,numAucts,numClicks);
+    for a=1:numAucts
+        % randomly pick a location to set for the auction
+        city = ceil(nCities*rand);
+        [X,~,~] = init_logKG(numLocations+1);
+        X = location(X,city);
+        % get bid for that auction
+        [x_choice,w_est,q_est] = logKG(X,w_est,q_est,10);
+        bid = x_choice(1);
+        bidIndex = find(X(:,1) == bid);
+        % simulate click or not
+        click = binornd(1,truth(city,bidIndex));
+        % update estimates of w and q
+        [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,1,click);
+        
+        fprintf('Hr = %d, Bid = %4.1f, Click = %d\n', h, bid, click);
+    end
 end
 
 % graph to see error
