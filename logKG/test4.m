@@ -7,13 +7,13 @@
 % policy.
 
 global nCountries;
-nCountries = 6;
+nCountries = 10;
 
 nRegions = nCountries*nCountries;
 nCities = nCountries*nCountries*nCountries;
 numLocations = nCountries + nRegions + nCities; % # of indicator variables
 t_hor = 10;  % value of the time horizon tunable parameter
-runs = 25;   % # of times each time horizon is tested
+runs = 15;   % # of times each time horizon is tested
 hrs = 336;   % number of steps in each simulation
 
 % Mean number of auctions per hour of week
@@ -96,21 +96,6 @@ end
 figure;
 OC_avg = OC_all/runs;
 plot(1:hrs,OC_avg);
-title('Average OC over time in simulation for 216 cities using logKG');
+title('Average OC over time in simulation for 1000 cities using logKG');
 xlabel('Time in simulation (in hours)');
-ylabel('OC, averaged over 25 runs (in dollars)');
-
-function altMatrix = location(altMatrix,city)
-
-global nCountries;
-nRegions = nCountries*nCountries;
-nCities = nCountries*nCountries*nCountries;
-
-country = idivide((city - 1),int32(nCities/nCountries)) + 1;
-region = idivide((city - 1),int32(nCities/nRegions)) + 1;
-altMatrix(:,1+country) = 1;
-altMatrix(:,1+nCountries+region) = 1;
-altMatrix(:,1+nCountries+nRegions+city) = 1;
-
-end
-
+ylabel('OC, averaged over 15 runs (in dollars)');

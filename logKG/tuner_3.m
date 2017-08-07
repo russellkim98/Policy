@@ -107,17 +107,3 @@ plot(t_hors,OC_avg);
 title('Average weekly OC varying time horizon tunable parameter for logKG');
 xlabel('Value of tunable parameter');
 ylabel('OC over the week, averaged over 15 runs (in dollars)');
-
-function altMatrix = location(altMatrix,city)
-
-global nCountries;
-nRegions = nCountries*nCountries;
-nCities = nCountries*nCountries*nCountries;
-
-country = idivide((city - 1),int32(nCities/nCountries)) + 1;
-region = idivide((city - 1),int32(nCities/nRegions)) + 1;
-altMatrix(:,1+country) = 1;
-altMatrix(:,1+nCountries+region) = 1;
-altMatrix(:,1+nCountries+nRegions+city) = 1;
-
-end

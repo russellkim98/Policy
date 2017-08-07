@@ -98,18 +98,3 @@ for city = 1:nCities
     opt_prob = sigmoid(opt_alt*wStar);
     scatter(opt_bid,opt_prob,[],get(h,'Color'),'*');
 end
-
-
-function altMatrix = location(altMatrix,city)
-
-global nCountries;
-nRegions = nCountries*nCountries;
-nCities = nCountries*nCountries*nCountries;
-
-country = idivide((city - 1),int32(nCities/nCountries)) + 1;
-region = idivide((city - 1),int32(nCities/nRegions)) + 1;
-altMatrix(:,1+country) = 1;
-altMatrix(:,1+nCountries+region) = 1;
-altMatrix(:,1+nCountries+nRegions+city) = 1;
-
-end
