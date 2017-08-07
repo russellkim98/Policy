@@ -53,7 +53,6 @@ for r=1:runs
         end
         
         % Initialize policy and set truths for each location
-        [X,~,~] = init_logKG(numLocations+1);
         truth = zeros(nCities,M);
         for city=1:nCities
             [X,~,~] = init_logKG(numLocations+1);
