@@ -101,7 +101,7 @@ for i=1:N
 end
 ```
 
-logKG Policy Considering Next Auction as a Single Period (Parametric Belief Model) with Location Attributes
+logKG Policy Considering Next Auction as a Single Period (Parametric Belief Model) with Attributes
 
 ```
 #!matlab
@@ -113,9 +113,9 @@ t_hor = t;
 for i=1:N
     numAucts = n;
     for auct=1:numAucts
-        location;
-        a_location = locToA(location);
-        x = logKG(a_location,b,c,t_hor);
+        attributes;
+        a_att = attToA(attributes);
+        x = logKG(a_att,b,c,t_hor);
         bid = x(1);
         click = m;
         [b,c] = learn_logKG(x,b,c,1,click);
