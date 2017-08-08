@@ -4,7 +4,7 @@
 % probabilities that each theta vector is a true representation of the
 % coefficients of x. 
 
-function [X,theta,p] = initialize_KG()
+function [X,theta,p] = init_KG()
 
 % alternatives that we are deciding between
 disc = (0:0.5:10)';

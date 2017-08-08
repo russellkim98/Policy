@@ -9,7 +9,7 @@ mu = max(auctions);
 A = floor(mu + 3*sqrt(mu));
 
 % Initialize policy and truth
-[a,b,c] = initialize_KG();
+[a,b,c] = init_KG();
 X = a;
 M = length(X);
 theta = b;
