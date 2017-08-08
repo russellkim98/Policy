@@ -3,7 +3,7 @@
 ## What is this repository for?
 
 * Files for running various policies to decide bid values for auctions on Google Ads
-* Click [here](https://www.overleaf.com/10139484dwhqqgbkvfrc#/37428144/) to see mathematical models/write-ups of some of these policies.
+* Click [here](https://www.overleaf.com/10139484dwhqqgbkvfrc#/37428144/) to see mathematical models/write-ups of some of the sampled belief policies.
 
 ## Requirements
  
@@ -11,8 +11,8 @@
 
 ## Folders
 
-* logKG -- Contains all of the functions and testing modules for the KG policy adapted from Yingfei Wang's work, including init_logKG, logKG, and learner_logKG. 
-* sampledKG -- Contains all of the functions and testing modules for the KG policies using a sampled belief model, including initialize_KG, KG_hr, KG_ms, and learner_KG_hr.
+* logKG -- Contains all of the functions and testing modules for the KG policy adapted from Yingfei Wang's work, including init_logKG, logKG, and learn_logKG. 
+* sampledKG -- Contains all of the functions and testing modules for the KG policies using a sampled belief model, including init_KG, KG_hr, KG_ms, and learn_KG.
 
 ## Instructions
 
