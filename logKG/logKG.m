@@ -8,7 +8,7 @@
 % online application. Returns the w_est and q_est matrices as
 % well as the alternative vector with the chosen bid. 
 
-function [x_chosen,w_est,q_est]=logKG(X,w_est,q_est,t_hor)
+function x_chosen = logKG(X,w_est,q_est,t_hor)
 
 [M,~] = size(X);
 KG = zeros(M,1);

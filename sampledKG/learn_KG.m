@@ -3,7 +3,7 @@
 % auctions, and the number of clicks. Returns the given X and theta 
 % matrices as well as an updated p vector p_new.
 
-function p = learner_KG_hr(theta,p,bid,nAuct,nClick)
+function [theta,p] = learn_KG(bid,theta,p,nAuct,nClick)
 
 x = [1 bid];
 N = nAuct - nClick;

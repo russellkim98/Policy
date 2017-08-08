@@ -2,7 +2,7 @@
 % an alternative vector x, a w_est vector, a q_est vector, the number of
 % auctions, and the number of clicks. Returns the updated w_est and q_est vectors.
 
-function [w_est,q_est] = learner_logKG(x,w_est,q_est,nAuct,nClick)
+function [w_est,q_est] = learn_logKG(x,w_est,q_est,nAuct,nClick)
 
 N = nAuct - nClick;
 
