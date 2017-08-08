@@ -18,10 +18,10 @@ K = length(theta);
 
 % input
 t_hor = 100;
-tau = 1;
+tau = 5;
 hrs = 168;
 OC_all = zeros(hrs,1);
-runs = 1;
+runs = 15;
 
 % Find expected profit given a click for each alternative.
 E_profit = zeros(M,1);
@@ -38,15 +38,17 @@ for r=1:runs
     % week-long simulation
     [a,b,c] = init_KG();
     for i = 1:hrs
-        bid = KG_ms(a,b,c,t_hor,tau);
         numAucts = poissrnd(auctions(i));
         if numAucts > A
             numAucts = A;
         end
-        bidIndex = find(X(:,2) == bid);
-        numClicks = binornd(numAucts,truth(bidIndex));
-        OC_all(i) = OC_all(i) + binornd(numAucts,truth(alt_best))*E_profit(alt_best) - numClicks*E_profit(bidIndex);
-        [b,c] = learn_KG(bid,b,c,numAucts,numClicks);
+        for auct=1:numAucts
+            bid = KG_ms(a,b,c,t_hor,tau);
+            bidIndex = find(X(:,2) == bid);
+            numClicks = binornd(1,truth(bidIndex));
+            OC_all(i) = OC_all(i) + binornd(1,truth(alt_best))*E_profit(alt_best) - numClicks*E_profit(bidIndex);
+            [b,c] = learn_KG(bid,b,c,numAucts,numClicks);
+        end
     end
     r
 end
@@ -57,4 +59,4 @@ OC_avg = OC_all/runs;
 plot(1:hrs,OC_avg);
 title('Average OC over time in simulation using KG_ms (t_hor = 100, tau = 5)');
 xlabel('Time in simulation (in hours)');
-ylabel('OC, averaged over 25 runs (in dollars)');
+ylabel('OC, averaged over 15 runs (in dollars)');

@@ -1,27 +1,28 @@
-% Tunes the logKG/init_logKG/learner_logKG policy for the tunable parameter
-% representing the time horizon (the parameter in front of the offline KG
-% value in the online calculation). For each run, a truth is set and then
-% for each possible value in t_hors, this test file simulates a week
-% on a per hour basis. Compares the policy's average profits for each time horizon 
-% with the average profits if you knew the truth and if you randomly and 
-% uniformly chose a bid at each hour. 
+% The simplest module to tune the logKG/init_logKG/learner_logKG policy 
+% for the tunable parameter representing the time horizon. Graphs the
+% policy's average profits for each time horizon with the average profits
+% if you knew the truth and if you randomly and uniformly chose a bid at
+% each hour. 
+% 
+% For each run, starts off with a normal prior distribution of the
+% coefficients of the logistic function and tries to learn the true curve 
+% with each value of the tunable parameter in t_hors. Simulates weeks on
+% a per hour basis.
 
-t_hors = 0:1:50;  % Various time horizons to be tested
-runs = 1;          % # of times each time horizon is tested
-hrs = 168;          % Number of steps in each simulation
+t_hors = 0:1:50;  % various time horizons to be tested
+hrs = 168;        % # of hours in simulation
+runs = 25;        % # of simulations (# of times each time horizon is tested)
 
-% Mean number of auctions per hour of week
+% average # of auctions for each hour of the week based on historical data
 global data;
 data = csvread('ParsedParam.csv',1,0);
 auctions = data_preprocessor();
-mu = max(auctions);
-A = floor(mu + 3*sqrt(mu));
 
-% Initialize policy
-[X,w_est,q_est] = init_logKG(2);
+% initialize policy
+[X,~,~] = init_logKG(2);
 X(:,2) = 1;
-[M,d] = size(X);
-pure_all = zeros(length(t_hors),1);
+[M,~] = size(X);
+pure_all = zeros(length(t_hors),1); 
 rand_all = zeros(length(t_hors),1);
 profit_all = zeros(length(t_hors),1);
 
@@ -32,10 +33,10 @@ for alt=1:M
 end
 
 for r=1:runs
-    % Set a reasonable truth
+    % randomly set a reasonable truth
     while 1
-        wStar_0 = normrnd(-7,1);
-        wStar_1 = normrnd(1,1);
+        wStar_0 = normrnd(-7,1); % coefficient for constant
+        wStar_1 = normrnd(1,1);  % coefficient for bid value
         wStar=[wStar_1;wStar_0];
         truth=sigmoid(X*wStar);
         [~,alt_best] = max(E_profit.*truth);
@@ -61,11 +62,8 @@ for r=1:runs
             x_choice = logKG(X,w_est,q_est,t_hors(t));
             bid = x_choice(1);
             bidIndex = find(X(:,1) == bid);
-            % simulate number of auctions, clicks, and profits for the hour
+            % simulate number of auctions and clicks for the policy
             numAucts = poissrnd(auctions(h));
-            if numAucts > A
-                numAucts = A;
-            end
             numClicks = binornd(numAucts,truth(bidIndex));
             % capture profits 
             pure_week = pure_week + binornd(numAucts,truth(alt_best))*E_profit(alt_best);
@@ -84,7 +82,7 @@ for r=1:runs
     
 end
 
-% Graph opportunity cost
+% graph average profits for each time horizon
 figure;
 pure_avg = pure_all/runs;
 rand_avg = rand_all/runs;

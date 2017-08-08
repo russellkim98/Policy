@@ -1,29 +1,35 @@
-% A module to test the behavior of logKG/init_logKG/learner_logKG,
-% specifically by graphing the opportunity cost of the policy as a function
-% of the number of steps in the simulation. Simulates a week on a per hour
-% basis, specifically with auctions and clicks coming from distinct locations.
-% Starts off with a normal prior  distribution of the coefficients of the
-% logistic function and tries to learn the true curve with an online logKG
-% policy.
+% A module to test the behavior of logKG/init_logKG/learner_logKG, 
+% specifically with auctions and clicks coming from several locations. 
+% Graphs the opportunity cost of the policy as a function of the number of 
+% steps in the simulation. 
+%
+% Starts off with normal prior distributions of the coefficients of the 
+% logistic function and tries to learn the true curves with an online logKG 
+% policy with a tunable parameter value of 10. Simulates a week on a per 
+% hour basis. Graphs the true and estimated curves.
+%
+% For simplicity, assumes that there are x countries, x^2 regions (x regions 
+% in every country), x^3 cities (x cities in every region). Assumes that the 
+% first x cities (indices 1,2,..,x) are in the first region and the second 
+% x cities (indices x+1,x+2,...,2x) are in the second region and so forth.
+% Also assumes the same of regions and countries.
+
+t_hor = 10;       % value of time horizon tunable parameter
+hrs = 168;        % # of hours in simulation
+runs = 15;        % # of simulations 
 
 global nCountries;
-nCountries = 2;
-
+nCountries = 10;
 nRegions = nCountries*nCountries;
 nCities = nCountries*nCountries*nCountries;
-numLocations = nCountries + nRegions + nCities; % # of indicator variables
-t_hor = 10;  % value of the time horizon tunable parameter
-runs = 15;   % # of times each time horizon is tested
-hrs = 336;   % number of steps in each simulation
+numLocations = nCountries + nRegions + nCities; % # indicator variables
 
-% Mean number of auctions per hour of week
+% average # of auctions for each hour of the week based on historical data
 global data;
 data = csvread('ParsedParam.csv',1,0);
 auctions = data_preprocessor();
-mu = max(auctions);
-A = floor(mu + 3*sqrt(mu));
 
-% Initialize policy
+% initialize policy
 [X,~,~] = init_logKG(numLocations+1);
 [M,~] = size(X);
 OC_all = zeros(hrs,1);
@@ -35,9 +41,11 @@ for alt=1:M
 end
 
 for r=1:runs
-    % Set a reasonable truth
+    
+    % randomly set a reasonable truth
     while 1
-        % True coefficients for bid, countries, regions, and cities
+        
+        % true coefficients for bid, countries, regions, and cities
         wStar = zeros(numLocations+1,1);
         wStar(1) = normrnd(0.75,1);
         for c=1:nCountries
@@ -50,16 +58,19 @@ for r=1:runs
             wStar(1+nCountries+nRegions+c) = normrnd(-3,1);
         end
         
-        % Initialize policy and set truths for each location
+        % initialize policy and set truths for each location
         truth = zeros(nCities,M);
         for city=1:nCities
+            % gets a blank alternative matrix
             [X,~,~] = init_logKG(numLocations+1);
+            % turns "on" indicator variables according to location
             X = location(X,city);
             truth(city,:) = sigmoid(X*wStar);
         end
         if sum(truth(:,M) < 0.01) == 0
             break;
         end
+        
     end
     
     % prior distributions of w_est and q_est
@@ -69,9 +80,6 @@ for r=1:runs
         % simulate number of auctions for the hour
         hour_of_week = mod(h-1,168) + 1;
         numAucts = poissrnd(auctions(hour_of_week));
-        if numAucts > A
-            numAucts = A;
-        end
         for a=1:numAucts
             % randomly pick a location to set for the auction
             city = ceil(nCities*rand);
@@ -89,10 +97,12 @@ for r=1:runs
             [w_est,q_est] = learn_logKG(x_choice,w_est,q_est,1,click);
         end
     end
+    
     r
+    
 end
 
-% Graph opportunity cost
+% graph average opportunity cost for each hour
 figure;
 OC_avg = OC_all/runs;
 plot(1:hrs,OC_avg);
