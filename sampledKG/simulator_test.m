@@ -20,13 +20,14 @@ truth = phi(X*thetaStar);
 % Variables and result matrices
 steps = 50;
 t_hor = 100;
+tau = 1;
 aucts = zeros(M,A+1);
 clicks = zeros(M,A+1);
 bids = zeros(steps,1);
 
 % Simulation
 for i = 1:steps
-    [a,b,c,bid] = KG_hr(a,b,c,t_hor);
+    bid = KG_ms(a,b,c,t_hor,tau);
     bidIndex = find(X(:,2) == bid);
     numAucts = poissrnd(auctions(i));
     if numAucts > A
@@ -38,7 +39,7 @@ for i = 1:steps
     clicks(bidIndex,numClicks+1) = clicks(bidIndex,numClicks+1) + 1;
     bids(i) = bid;
     
-    [a,b,c] = learner_KG_hr(a,b,c,bid,numAucts,numClicks);
+    c = learner_KG_hr(b,c,bid,numAucts,numClicks);
     disp(i);
 end
 

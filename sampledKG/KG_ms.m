@@ -3,7 +3,7 @@
 % value for the time horizon. Returns the bid that maximizes the knowledge
 % gradient, and the given X, theta, and p matrices.
 
-function [X,theta,p,bid] = KG_ms(X,theta,p,t_hor,tau)
+function bid = KG_ms(X,theta,p,t_hor,tau)
 
 [M,~] = size(X);     % # of alternatives and dimensions
 [~,K] = size(theta); % # of possible coefficient vectors
