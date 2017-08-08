@@ -1,22 +1,22 @@
-# README #
+# README
 
-## What is this repository for? ##
+## What is this repository for?
 
 * Files for running various policies to decide bid values for auctions on Google Ads
 * Click [here](https://www.overleaf.com/10139484dwhqqgbkvfrc#/37428144/) to see mathematical models/write-ups of some of these policies.
 
-## Requirements ##
+## Requirements
  
 * MATLAB
 
-## Folders ##
+## Folders
 
 * logKG -- Contains all of the functions and testing modules for the KG policy adapted from Yingfei Wang's work, including init_logKG, logKG, and learner_logKG. 
 * sampledKG -- Contains all of the functions and testing modules for the KG policies using a sampled belief model, including initialize_KG, KG_hr, KG_ms, and learner_KG_hr.
 
-## Instructions ##
+## Instructions
 
-### KG Policies (Sampled Belief Model) ###
+#### KG Policies (Sampled Belief Model)
 
 1. Call **init_KG** once at the start of a run of simulations to initialize a policy. It takes in no parameters and returns 3 matrices that should be stored and passed on in the first call to KG_hr or KG_ms. 
 
@@ -31,7 +31,7 @@
 5. At the end of a run of simulations, the 2 matrices put out by **learn_KG** give you the possible truths and their probabilities of being true, respectively.
 
 
-### logKG Policies (Parametric Belief Model) ###
+#### logKG Policies (Parametric Belief Model)
 
 1. Call **init_logKG** once at the start of a run of simulations to initialize a policy. It takes in an integer value representing the dimension of the problem and returns 3 matrices that should be stored and passed on in the first call to logKG. 
     * Without any attributes, the dimension of the problem for **init_logKG** is 2 (representing a logistic function with one variable representing the bid value and a constant).
@@ -48,7 +48,7 @@
 5. At the end of a run of simulations, the 2 matrices put out by **learn_logKG** give you the estimated mean and the inverse of the variance of the coefficients in the logistic function.
 
 
-## Sample Code ##
+## Sample Code
 
 KG Policy Considering Next Hour as a Single Period (Sampled Belief Model)
 
