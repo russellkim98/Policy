@@ -34,8 +34,8 @@
 #### logKG Policies (Parametric Belief Model)
 
 1. Call **init_logKG** once at the start of a run of simulations to initialize a policy. It takes in an integer value representing the dimension of the problem and returns 3 matrices that should be stored and passed on in the first call to logKG. 
-    * Without any attributes, the dimension of the problem for **init_logKG** is 2 (representing a logistic function with one variable representing the bid value and a constant).
-    * With attributes, the dimension is equal to 1 + the number of indicator variables in play. For example, if data is coming from 5 distinct cities (all in the same region/country), d = 6. Additionally, with attributes, the first matrix that is returned from **init_logKG** is modified before being passed on logKG.
+    * Without any attributes, the dimension of the problem for **init_logKG** is 2 (representing a logistic function with one variable representing the bid value and a constant). Additionally, without attributes, the first matrix that is returned from **init_logKG** is modified before being passed on to logKG in the following way: All of the values in the entire second column of the matrix should be set to 1.
+    * With attributes, the dimension is equal to 1 + the number of indicator variables in play. For example, if data is coming from 5 distinct cities (all in the same region/country), d = 6. Additionally, with attributes, the first matrix that is returned from **init_logKG** is modified before being passed on to logKG to reflect that attributes that are present at the time of the call to logKG. 
 
 2. Call **logKG** during each simulated hour to choose a bid. It takes in 3 matrices that were previously stored and a tunable parameter t_hor representing the time horizon. When t_hor is large, the policy places an emphasis on the value of learning and the profit you can make after learning; when t_hor is small, the policy places an emphasis the the profit you make while learning. It returns a vector representing the chosen alternative, to be stored and passed on exactly in the next call to learn_logKG. The first value of the vector returned by **logKG** is the bid value. 
     * Without any attributes, **logKG** takes in the exact 3 matrices that were previously stored.
@@ -89,6 +89,7 @@ logKG Policy Considering Next Auction as a Single Period (Parametric Belief Mode
 #!matlab
 d = 2;
 [a,b,c] = init_logKG(d);
+a(:,2) = 1;
 
 t_hor = t;
 
