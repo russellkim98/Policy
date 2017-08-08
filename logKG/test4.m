@@ -7,7 +7,7 @@
 % policy.
 
 global nCountries;
-nCountries = 10;
+nCountries = 2;
 
 nRegions = nCountries*nCountries;
 nCities = nCountries*nCountries*nCountries;
@@ -79,14 +79,14 @@ for r=1:runs
             [X,~,~] = init_logKG(numLocations+1);
             X = location(X,city);
             % get bid for that auction
-            [x_choice,w_est,q_est] = logKG(X,w_est,q_est,t_hor);
+            x_choice = logKG(X,w_est,q_est,t_hor);
             bid = x_choice(1);
             bidIndex = find(X(:,1) == bid);
             % simulate click or not and update OC
             click = binornd(1,truth(city,bidIndex));
             OC_all(h) = OC_all(h) + binornd(1,truth(city,alt_best))*E_profit(alt_best) - click*E_profit(bidIndex);
             % update estimates of w and q
-            [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,1,click);
+            [w_est,q_est] = learn_logKG(x_choice,w_est,q_est,1,click);
         end
     end
     r

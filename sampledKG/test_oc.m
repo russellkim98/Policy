@@ -18,10 +18,10 @@ K = length(theta);
 
 % input
 t_hor = 100;
-tau = 5;
+tau = 1;
 hrs = 168;
 OC_all = zeros(hrs,1);
-runs = 25;
+runs = 1;
 
 % Find expected profit given a click for each alternative.
 E_profit = zeros(M,1);
@@ -36,9 +36,9 @@ for r=1:runs
     truth = phi(X*thetaStar);
     [~,alt_best] = max(E_profit.*truth);
     % week-long simulation
-    [a,b,c] = initialize_KG();
+    [a,b,c] = init_KG();
     for i = 1:hrs
-        [a,b,c,bid] = KG_ms(a,b,c,t_hor,tau);
+        bid = KG_ms(a,b,c,t_hor,tau);
         numAucts = poissrnd(auctions(i));
         if numAucts > A
             numAucts = A;
@@ -46,7 +46,7 @@ for r=1:runs
         bidIndex = find(X(:,2) == bid);
         numClicks = binornd(numAucts,truth(bidIndex));
         OC_all(i) = OC_all(i) + binornd(numAucts,truth(alt_best))*E_profit(alt_best) - numClicks*E_profit(bidIndex);
-        [a,b,c] = learner_KG_hr(a,b,c,bid,numAucts,numClicks);
+        [b,c] = learn_KG(bid,b,c,numAucts,numClicks);
     end
     r
 end

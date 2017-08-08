@@ -8,13 +8,13 @@
 % number of locations). 
 
 global nCountries;
-nCountries = 6;
+nCountries = 2;
 
 nRegions = nCountries*nCountries;
 nCities = nCountries*nCountries*nCountries;
 numLocations = nCountries + nRegions + nCities; % # of indicator variables
-t_hors = 0:25:500;     % Various time horizons to be tested
-runs = 15;          % # of times each time horizon is tested
+t_hors = 0:1:10;     % Various time horizons to be tested
+runs = 1;          % # of times each time horizon is tested
 hrs = 168;          % Number of steps in each simulation
 
 % Mean number of auctions per hour of week
@@ -83,14 +83,14 @@ for r=1:runs
                 [X,~,~] = init_logKG(numLocations+1);
                 X = location(X,city);
                 % get bid for that auction
-                [x_choice,w_est,q_est] = logKG(X,w_est,q_est,t_hors(t));
+                x_choice = logKG(X,w_est,q_est,t_hors(t));
                 bid = x_choice(1);
                 bidIndex = find(X(:,1) == bid);
                 % simulate click or not and update OC
                 click = binornd(1,truth(city,bidIndex));
                 OC_week = OC_week + binornd(1,truth(city,alt_best))*E_profit(alt_best) - click*E_profit(bidIndex);
                 % update estimates of w and q
-                [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,1,click);
+                [w_est,q_est] = learn_logKG(x_choice,w_est,q_est,1,click);
             end
         end
         OC_all(t) = OC_all(t) + OC_week;

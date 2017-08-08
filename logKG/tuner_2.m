@@ -7,7 +7,7 @@
 % number of runs.
 
 t_hors = 0:1:50;  % Various time horizons to be tested
-runs = 25;        % # of times each time horizon is tested
+runs = 1;        % # of times each time horizon is tested
 hrs = 168;        % Number of steps in each simulation
 probChange = 0.1; % Probability of changing truth for a given step
 
@@ -68,7 +68,7 @@ for r=1:runs
                 end
             end
             % get bid
-            [x_choice,w_est,q_est]=logKG(X,w_est,q_est,t_hors(t));
+            x_choice = logKG(X,w_est,q_est,t_hors(t));
             bid = x_choice(1);
             bidIndex = find(X(:,1) == bid);
             % simulate number of auctions, clicks, and OC for the hour
@@ -81,7 +81,7 @@ for r=1:runs
             alt_rand = randi(M);
             rand_week = rand_week + binornd(numAucts,truth(alt_rand))*E_profit(alt_rand);
             % update estimates of w and q
-            [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,numAucts,numClicks);
+            [w_est,q_est] = learn_logKG(x_choice,w_est,q_est,numAucts,numClicks);
         end
         OC_all(t) = OC_all(t) + OC_week;
         rand_all(t) = rand_all(t) + rand_week;

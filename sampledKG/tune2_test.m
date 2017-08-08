@@ -35,7 +35,7 @@ tau = 10;
 hrs = 72;
 
 % Tuning
-[a,b,c] = initialize_KG();
+[a,b,c] = init_KG();
 KG_all = zeros(M,hrs);
 reward_all = zeros(M,hrs);
 for i = 1:hrs
@@ -60,14 +60,14 @@ for i = 1:hrs
     end
     
     % regular simulation
-    [a,b,c,bid,KG,reward] = KG_ms(a,b,c,tau);
+    [bid,KG,reward] = KG_ms(a,b,c,tau);
     numAucts = poissrnd(auctions(i));
     if numAucts > A
         numAucts = A;
     end
     bidIndex = find(X(:,2) == bid);
     numClicks = binornd(numAucts,truth(bidIndex));
-    [a,b,c] = learner_KG_hr(a,b,c,bid,numAucts,numClicks);
+    [b,c] = learn_KG(bid,b,c,numAucts,numClicks);
     % store one-period reward and offline KG values
     KG_all(:,i) = KG;
     reward_all(:,i) = reward;

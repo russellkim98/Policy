@@ -45,11 +45,3 @@ end
 hold off;
 
 disp(mean(bid_best));
-
-% % Graph the optimal expected profits by their bid values. 
-% figure;
-% hold on;
-% for k=1:K
-%     scatter(bid_best(k),F_best(k),[],c,'o','filled');
-% end
-% hold off;

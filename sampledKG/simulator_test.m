@@ -39,7 +39,7 @@ for i = 1:steps
     clicks(bidIndex,numClicks+1) = clicks(bidIndex,numClicks+1) + 1;
     bids(i) = bid;
     
-    c = learner_KG_hr(b,c,bid,numAucts,numClicks);
+    [b,c] = learn_KG(bid,b,c,numAucts,numClicks);
     disp(i);
 end
 

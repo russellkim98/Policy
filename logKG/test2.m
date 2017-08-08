@@ -35,7 +35,7 @@ end
 
 for h=1:hrs
     % get bid
-    [x_choice,w_est,q_est] = logKG(X,w_est,q_est,10);
+    x_choice = logKG(X,w_est,q_est,10);
     bid = x_choice(1);
     bidIndex = find(X(:,1) == bid);
     % simulate number of auctions and clicks for the hour
@@ -45,7 +45,7 @@ for h=1:hrs
     end
     numClicks = binornd(numAucts,truth(bidIndex));
     % update estimates of w and q
-    [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,numAucts,numClicks);
+    [w_est,q_est] = learn_logKG(x_choice,w_est,q_est,numAucts,numClicks);
 end
 
 % graph to see error

@@ -7,7 +7,7 @@
 % uniformly chose a bid at each hour. 
 
 t_hors = 0:1:50;  % Various time horizons to be tested
-runs = 25;          % # of times each time horizon is tested
+runs = 1;          % # of times each time horizon is tested
 hrs = 168;          % Number of steps in each simulation
 
 % Mean number of auctions per hour of week
@@ -58,7 +58,7 @@ for r=1:runs
         
         for h=1:hrs
             % get bid
-            [x_choice,w_est,q_est]=logKG(X,w_est,q_est,t_hors(t));
+            x_choice = logKG(X,w_est,q_est,t_hors(t));
             bid = x_choice(1);
             bidIndex = find(X(:,1) == bid);
             % simulate number of auctions, clicks, and profits for the hour
@@ -73,7 +73,7 @@ for r=1:runs
             rand_week = rand_week + binornd(numAucts,truth(alt_rand))*E_profit(alt_rand);
             profit_week = profit_week + numClicks*E_profit(bidIndex);
             % update estimates of w and q
-            [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,numAucts,numClicks);
+            [w_est,q_est] = learn_logKG(x_choice,w_est,q_est,numAucts,numClicks);
         end
         pure_all(t) = pure_all(t) + pure_week;
         rand_all(t) = rand_all(t) + rand_week;

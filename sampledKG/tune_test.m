@@ -59,7 +59,7 @@ for indexH=1:length(t_hors)
         % initialize truth, policy, profit counter
         %             thetaStar = theta(:,altTruth(1));
         %             truth = phi(X*thetaStar);
-        [a,b,c] = initialize_KG();
+        [a,b,c] = init_KG();
         
         % profit over the whole week using truth
         truth_week = 0;
@@ -77,7 +77,7 @@ for indexH=1:length(t_hors)
             %                     truth = phi(X*thetaStar);
             %                 end
             % regular simulation
-            [a,b,c,bid] = KG_ms(a,b,c,t_hors(indexH),taus(indexT));
+            bid = KG_ms(a,b,c,t_hors(indexH),taus(indexT));
             numAucts = poissrnd(auctions(i));
             if numAucts > A
                 numAucts = A;
@@ -90,7 +90,7 @@ for indexH=1:length(t_hors)
             rand_week = rand_week + binornd(numAucts,truth(alt_rand))*E_profit(alt_rand);
             policy_week = policy_week + numClicks*E_profit(bidIndex);
             % update policy
-            [a,b,c] = learner_KG_hr(a,b,c,bid,numAucts,numClicks);
+            [b,c] = learn_KG(bid,b,c,numAucts,numClicks);
         end
         truth_all(indexT,indexH) = truth_all(indexT,indexH) + truth_week;
         rand_all(indexT,indexH) = rand_all(indexT,indexH) + rand_week;

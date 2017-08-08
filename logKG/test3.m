@@ -66,13 +66,13 @@ for h=1:hrs
         [X,~,~] = init_logKG(numLocations+1);
         X = location(X,city);
         % get bid for that auction
-        [x_choice,w_est,q_est] = logKG(X,w_est,q_est,10);
+        x_choice = logKG(X,w_est,q_est,10);
         bid = x_choice(1);
         bidIndex = find(X(:,1) == bid);
         % simulate click or not
         click = binornd(1,truth(city,bidIndex));
         % update estimates of w and q
-        [w_est,q_est] = learner_logKG(x_choice,w_est,q_est,1,click);
+        [w_est,q_est] = learn_logKG(x_choice,w_est,q_est,1,click);
         
         fprintf('Hr = %d, Bid = %4.1f, Click = %d\n', h, bid, click);
     end
