@@ -1,13 +1,10 @@
-% Find and graph the optimal bid and expected profit for each truth. 
+% A module to test init_KG and profit, specifically by graphing the
+% alternative probability curves and the optimal bids for that curve based
+% on expected profit from a click.
 
-% alternatives that we are deciding between
-disc = [0:0.25:2,2.5:0.5:10]';
-X = [ones(length(disc),1) disc];
+% Initialize the policy
+[X,theta,p] = init_KG;
 M = length(X);
-
-% thetas we are deciding between
-theta = [-1.5 -2.5 -3.5 -4.5 -5.5 -8 -1.5 -2.5 -3.5 -1.5 -2.5 -3.5 -4.5 -5.5; ...
-          1 1 1 1 1 1 0.75 0.75 0.75 1.5 1.5 1.5 1.5 1.5];
 K = length(theta);
 
 % Find expected profit given a click for each alternative.  
@@ -34,7 +31,7 @@ end
 figure;
 hold on;
 for k=1:K
-    t=theta(:,k);
+    t = theta(:,k);
     x = linspace(0,10)';
     X = [ones(length(x),1) x];
     prob = phi(X*t);
@@ -43,5 +40,3 @@ for k=1:K
     scatter(bid_best(k),phi([1 bid_best(k)]*t),[],c,'*');
 end
 hold off;
-
-disp(mean(bid_best));

@@ -7,10 +7,10 @@
 % policy with a tunable parameter value of 10. Simulates a week on a per 
 % hour basis. Graphs the true and estimated curves.
 
-t_hor = 10;       % value of time horizon tunable parameter
-hrs = 168;        % # of hours in simulation
-runs = 25;        % # of simulations 
-probChange = 0.1; % probability of changing truth for a given step
+t_hor = 10;        % value of time horizon tunable parameter
+hrs = 1000;        % # of hours in simulation
+runs = 25;         % # of simulations 
+probChange = 0.05; % probability of changing truth for a given step
 
 % average # of auctions for each hour of the week based on historical data
 global data;
@@ -49,7 +49,7 @@ for r=1:runs
     
     for h=1:hrs
         % occasionally change to another randomized, reasonable truth
-        if binornd(1,probChange) == 1
+        if mod(h,100) == 0
             while 1
                 wStar_0 = normrnd(-7,1); % coefficient for constant
                 wStar_1 = normrnd(1,1);  % coefficient for bid value
@@ -66,7 +66,8 @@ for r=1:runs
         bid = x_choice(1);
         bidIndex = find(X(:,1) == bid);
         % simulate number of auctions, clicks, and OC for the hour
-        numAucts = poissrnd(auctions(h));
+        hour_of_week = mod(h-1,168) + 1;
+        numAucts = poissrnd(auctions(hour_of_week));
         numClicks = binornd(numAucts,truth(bidIndex));
         OC_all(h) = OC_all(h) + binornd(numAucts,truth(alt_best))*E_profit(alt_best) - numClicks*E_profit(bidIndex);
         % update estimates of w and q
@@ -81,6 +82,10 @@ end
 figure;
 OC_avg = OC_all/runs;
 plot(1:hrs,OC_avg);
-title('Average OC over time in simulation using logKG for transient truth');
+hold on;
+for i=1:length(iChanges)
+    scatter(iChanges(i),OC_avg(iChanges(i)),'blue')
+end
+title('OC over time in simulation using logKG for transient truth');
 xlabel('Time in simulation (in hours)');
-ylabel('OC, averaged over 25 runs (in dollars)');
+ylabel('OC (in dollars)');

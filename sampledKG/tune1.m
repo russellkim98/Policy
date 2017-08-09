@@ -3,16 +3,16 @@
 % policy. Runs a week-long simulation for each possible tau/time horizon
 % combination.
 
-% historical data, max number of auctions per hour
+% average # of auctions for each hour of the week based on historical data
 global data;
 data = csvread('ParsedParam.csv',1,0);
 auctions = data_preprocessor();
-mu = max(auctions);
-A = floor(mu + 3*sqrt(mu));
+
 % alternatives that we are deciding between
 disc = [0:0.25:2,2.5:0.5:10]';
 X = [ones(length(disc),1) disc];
 M = length(X);
+
 % thetas we are deciding between
 theta = [-1.5 -2.5 -3.5 -4.5 -5.5 -10 -1.5 -2.5 -3.5 -1.5 -2.5 -3.5 -4.5 -5.5; ...
     1 1 1 1 1 1 0.75 0.75 0.75 1.5 1.5 1.5 1.5 1.5];
