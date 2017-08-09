@@ -27,7 +27,7 @@ OC_all = zeros(length(t_hors),1);
 % Find expected profit given a click for each alternative.
 E_profit = zeros(M,1);
 for alt=1:M
-    E_profit(alt) = profit(X(alt,1));
+    E_profit(alt) = profit2(X(alt,1));
 end
 
 for r=1:runs    

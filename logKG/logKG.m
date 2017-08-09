@@ -16,7 +16,7 @@ KG = zeros(M,1);
 % Find expected profit given a click for each alternative.
 E_profit = zeros(M,1);
 for alt=1:M
-    E_profit(alt) = profit(X(alt,1));
+    E_profit(alt) = profit2(X(alt,1));
 end
 
 for i=1:M % for each alternative, calculate the KG value
