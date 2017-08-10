@@ -1,18 +1,24 @@
-% Another attempt at tuning the number of auctions tau to look ahead and the
-% time horizon in the online version of the multi-step look-ahead KG
-% policy. Runs a week-long simulation for a given number of taus, comparing
-% the one-period reward and the offline KG value for each.
+% Another tuning module for init_KG/KG_ms/learn_KG, which specifically
+% toggles between two groups of true theta vectors that are fairly
+% different from one another and graphs the one-period rewards and the
+% offline KG values instead of profits or opportunity cost. 
+%
+% Note: To run this program, you have to change init_KG to initialize the
+% various theta vectors to be the same as the ones listed in this program.
+% You also have to modify KG_ms to not take in a t_hor tunable parameter
+% and instead return both the one-period rewards vector (rewards) and the
+% offline KG vector (KG). 
 
-% historical data, max number of auctions per hour
+tau = 10;        % value of lookahead tunable parameter
+hrs = 72;        % # of hours in simulation
+
+% average # of auctions for each hour of the week based on historical data
 global data;
 data = csvread('ParsedParam.csv',1,0);
 auctions = data_preprocessor();
-mu = max(auctions);
-A = floor(mu + 3*sqrt(mu));
 
 % alternatives that we are deciding between
-disc = (0:0.5:10)';
-X = [ones(length(disc),1) disc];
+[X,~,~] = init_KG;
 M = length(X);
 
 % thetas we are deciding between
@@ -20,62 +26,29 @@ theta = [-1.5 -2.5 -1.5 -2.5     -9 -10 -4.5 -5.5; ...
           1 1 1.5 1.5              1 1 0.5 0.5];
 theta_grp = [1 1 1 1 3 3 3 3];
 K = length(theta);
-
-% THE TRUTH
-% altTruth = ceil(rand*K);
-% thetaStar = theta(:,altTruth);
-% truth = phi(X*thetaStar);
-
 altTruth = [6; 3; 6; 3; 6; 3; 6; 3; 6; 3; 6];
 thetaStar = theta(:,altTruth(1));
 truth = phi(X*thetaStar);
 
-% input
-tau = 10;
-hrs = 72;
-
-% Tuning
 [a,b,c] = init_KG();
 KG_all = zeros(M,hrs);
 reward_all = zeros(M,hrs);
 for i = 1:hrs
-    
-    %     if mod(i,10) == 0
-    %         disp(altTruth);
-    %         altNewTruth = ceil(rand*K);
-    %         while theta_grp(altNewTruth) == theta_grp(altTruth)
-    %             altNewTruth = ceil(rand*K);
-    %         end
-    %         altTruth = altNewTruth;
-    %         thetaStar = theta(:,altTruth);
-    %         truth = phi(X*thetaStar);
-    %         disp(altTruth);
-    %     end
-    
-    % change truth every 15 hours
+    % toggle truth every 15 hours
     if mod(i,15) == 0
         n = idivide(i,int32(15));
         thetaStar = theta(:,altTruth(n+1));
         truth = phi(X*thetaStar);
     end
-    
     % regular simulation
     [bid,KG,reward] = KG_ms(a,b,c,tau);
     numAucts = poissrnd(auctions(i));
-    if numAucts > A
-        numAucts = A;
-    end
     bidIndex = find(X(:,2) == bid);
     numClicks = binornd(numAucts,truth(bidIndex));
     [b,c] = learn_KG(bid,b,c,numAucts,numClicks);
     % store one-period reward and offline KG values
     KG_all(:,i) = KG;
     reward_all(:,i) = reward;
-    
-    disp(c);
-    disp(KG);
-    disp(bid);
-    
 end
 
 figure;
