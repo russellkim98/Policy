@@ -1,6 +1,6 @@
 % A module to tune the logKG/init_logKG/learner_logKG policy for the tunable 
 % parameter representing the time horizon, specifically auctions and clicks 
-% coming from several locations.Graphs the average opportunity cost for 
+% coming from several locations. Graphs the average opportunity cost for 
 % each value in t_hors. 
 %
 % For each run, starts off with normal prior distributions of the
@@ -14,12 +14,12 @@
 % x cities (indices x+1,x+2,...,2x) are in the second region and so forth.
 % Also assumes the same of regions and countries.
 
-t_hors = 0:1:10;  % various time horizons to be tested
+t_hors = 0:1:50;  % various time horizons to be tested
 hrs = 168;        % # of hours in simulation
-runs = 15;        % # of simulations (# of times each time horizon is tested)
+runs = 25;        % # of simulations (# of times each time horizon is tested)
 
 global nCountries;
-nCountries = 10;
+nCountries = 2;
 nRegions = nCountries*nCountries;
 nCities = nCountries*nCountries*nCountries;
 numLocations = nCountries + nRegions + nCities; % # indicator variables
@@ -47,14 +47,8 @@ for r=1:runs
         % true coefficients for bid, countries, regions, and cities
         wStar = zeros(numLocations+1,1);
         wStar(1) = normrnd(0.75,1);
-        for c=1:nCountries
-            wStar(1+c) = normrnd(-1,1);
-        end
-        for g=1:nRegions
-            wStar(1+nCountries+g) = normrnd(-2,1);
-        end
-        for c=1:nCities
-            wStar(1+nCountries+nRegions+c) = normrnd(-3,1);
+        for l=1:numLocations
+            wStar(1+l) = normrnd(-2,1);
         end
         
         % initialize policy and set truths for each location
@@ -106,6 +100,6 @@ end
 figure;
 OC_avg = OC_all/runs;
 plot(t_hors,OC_avg);
-title('Average weekly OC varying time horizon tunable parameter for logKG and 1000 cities');
+title('Average weekly OC varying time horizon tunable parameter for logKG and 8 cities');
 xlabel('Value of tunable parameter');
-ylabel('OC over the week, averaged over 15 runs (in dollars)');
+ylabel('OC over the week, averaged over 25 runs (in dollars)');

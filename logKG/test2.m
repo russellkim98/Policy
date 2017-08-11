@@ -61,3 +61,6 @@ plot(alt,estCurve);
 [~,alt_best] = max(E_profit.*truth);
 opt_bid = X(alt_best,1);
 scatter(opt_bid,sigmoid([opt_bid 1]*wStar),[],get(h,'Color'),'*');
+title('True and Estimated Probability Curves');
+xlabel('Value of Bid Placed (in Dollars)');
+ylabel('Probability of Winning and Auction and Getting a Click');

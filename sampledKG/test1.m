@@ -39,4 +39,7 @@ for k=1:K
     c = get(h,'Color');
     scatter(bid_best(k),phi([1 bid_best(k)]*t),[],c,'*');
 end
+title('Possible Truth Curves and Their Optimal Bids');
+xlabel('Value of Bid Placed (in Dollars)');
+ylabel('Probability of Winning an Auction and Getting a Click');
 hold off;

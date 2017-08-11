@@ -48,14 +48,8 @@ for r=1:runs
         % true coefficients for bid, countries, regions, and cities
         wStar = zeros(numLocations+1,1);
         wStar(1) = normrnd(0.75,1);
-        for c=1:nCountries
-            wStar(1+c) = normrnd(-1,1);
-        end
-        for g=1:nRegions
-            wStar(1+nCountries+g) = normrnd(-2,1);
-        end
-        for c=1:nCities
-            wStar(1+nCountries+nRegions+c) = normrnd(-3,1);
+        for l=1:numLocations
+            wStar(1+l) = normrnd(-2,1);
         end
         
         % initialize policy and set truths for each location
